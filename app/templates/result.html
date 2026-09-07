@@ -40,5 +40,18 @@
   {% endif %}
 {% endif %}
 
+<h2>Ask a follow-up question</h2>
+<p class="lede">Answered only from our reviewed sources for {{ profile.country }}.</p>
+
+<form id="ask-form" data-country="{{ profile.country }}">
+  <label for="question">Your question</label>
+  <input id="question" type="text" name="question" required
+         placeholder="e.g. Do I have to archive invoices, and for how long?" />
+  <button type="submit">Ask</button>
+</form>
+<div id="ask-answer" hidden></div>
+
 <p><a href="/">Start over</a></p>
+
+<script src="/static/ask.js" defer></script>
 {% endblock %}

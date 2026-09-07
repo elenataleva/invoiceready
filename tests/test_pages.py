@@ -110,3 +110,24 @@ def test_blank_turnover_is_accepted_rather_than_rejected(seeded_client: TestClie
 
     assert response.status_code == 200
     assert SOURCE_URL in response.text
+
+
+def test_result_page_wires_up_the_follow_up_question_form(seeded_client: TestClient) -> None:
+    """The JS itself is verified manually (no JS test runner); this guards the wiring."""
+    response = seeded_client.post(
+        "/assess",
+        data={
+            "country": COUNTRY,
+            "vat_registered": "true",
+            "employee_count": "4",
+            "annual_turnover_eur": "380000",
+            "invoices_to": ["B2B"],
+        },
+    )
+
+    html = response.text
+    assert 'id="ask-form"' in html
+    # The country is carried over so the user never re-types it.
+    assert f'data-country="{COUNTRY}"' in html
+    assert 'id="ask-answer"' in html
+    assert "/static/ask.js" in html

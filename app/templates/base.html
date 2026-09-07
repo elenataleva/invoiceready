@@ -15,7 +15,7 @@
       h2 { font-size: 1.1rem; margin: 2rem 0 0.5rem; }
       .lede { color: #555; margin-top: 0; }
       label { display: block; margin: 1rem 0 0.25rem; font-weight: 600; }
-      select, input[type="number"] { padding: 0.4rem; font: inherit; width: 100%; box-sizing: border-box; }
+      select, input[type="number"], input[type="text"] { padding: 0.4rem; font: inherit; width: 100%; box-sizing: border-box; }
       fieldset { border: 1px solid #ddd; margin: 1rem 0 0; padding: 0.5rem 1rem 1rem; }
       fieldset label { font-weight: 400; display: inline-block; margin-right: 1rem; }
       button { margin-top: 1.5rem; padding: 0.6rem 1.2rem; font: inherit; cursor: pointer; }
@@ -25,6 +25,16 @@
       .obligation dd { margin: 0; }
       .source { font-size: 0.875rem; color: #555; }
       .notice { background: #f4f4f4; border: 1px solid #ddd; padding: 1rem; }
+      /* Follow-up answer box. A refusal must not be mistakable for an answer. */
+      #ask-answer { margin: 1rem 0 0; padding: 0.75rem 1rem; border: 1px solid #ddd; border-left: 4px solid #333; }
+      #ask-answer h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+      /* The model's answer carries its own newlines; without pre-wrap the
+         browser collapses them into one unreadable block. */
+      #ask-answer p { margin: 0 0 0.5rem; white-space: pre-wrap; }
+      #ask-answer.pending { color: #555; font-style: italic; border-left-color: #aaa; }
+      #ask-answer.refused { background: #fff4f4; border-color: #e2b3b3; border-left-color: #a52222; }
+      #ask-answer.error { background: #f4f4f4; border-left-color: #888; }
+      ul.citations { margin: 0; padding-left: 1.25rem; font-size: 0.875rem; word-break: break-all; }
       footer.disclaimer {
         position: fixed; bottom: 0; left: 0; right: 0;
         background: #fffbe6; border-top: 1px solid #e0d48a;

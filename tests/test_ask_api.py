@@ -26,7 +26,7 @@ def test_ask_returns_grounded_answer_with_citations_for_strong_match(
 ) -> None:
     response = client.post(
         "/api/ask",
-        json={"country": "BE", "question": "what format do I need in Belgium"},
+        json={"country": "BE", "question": "What invoice format do I need to use in Belgium?"},
     )
 
     assert response.status_code == 200

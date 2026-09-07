@@ -11,7 +11,9 @@ from app.retrieval import retrieve
 
 
 def test_close_question_returns_relevant_chunk(db_session: Session) -> None:
-    results = retrieve(db_session, country="BE", question="what format do I need in Belgium")
+    results = retrieve(
+        db_session, country="BE", question="What invoice format do I need to use in Belgium?"
+    )
 
     assert len(results) >= 1
     assert any("Required format and network" in chunk.content for chunk in results)
@@ -28,6 +30,8 @@ def test_country_with_no_ingested_data_returns_no_chunks(db_session: Session) ->
     BE-relevant question returns nothing when filtered to a country with
     zero ingested rule_chunks rows.
     """
-    results = retrieve(db_session, country="PL", question="what format do I need in Belgium")
+    results = retrieve(
+        db_session, country="PL", question="What invoice format do I need to use in Belgium?"
+    )
 
     assert results == []

@@ -1,0 +1,152 @@
+# Evaluation set for /api/ask, per docs/01-BUSINESS-PLAN.md #9 and
+# docs/02-TECHNICAL-DESIGN.md #8. Run with `python scripts/run_eval.py` -
+# not wired into `pytest`, since it calls the real Anthropic API and costs
+# real money per grounded case.
+#
+# Each case: `question`, `country`, `expected_refused`. Non-refusal cases
+# also carry `expected_source_contains` - a substring that must appear in
+# at least one returned citation URL. No exact-answer-text matching:
+# LLM phrasing varies run to run, but which source grounded the answer
+# should not.
+
+# --- Grounded cases: "Who is in scope" (knowledge_base/BE.md) ---
+- question: "Do I need to issue structured e-invoices if I'm a VAT-registered business in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+- question: "Does the Belgian e-invoicing mandate apply to small businesses, or only large companies?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+- question: "I only invoice private consumers, not other businesses - do I need to comply with the Belgian e-invoicing mandate?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+- question: "Is a Belgian VAT group covered by the structured e-invoicing obligation?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+- question: "Does using the small-enterprise VAT exemption scheme mean I don't need structured e-invoices in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+- question: "Who exactly is required to send structured electronic invoices in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "finance.belgium.be"
+
+# --- Grounded cases: "Dates and phases" ---
+- question: "When does the Belgian e-invoicing mandate start?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Is there a grace period before penalties apply for the new e-invoicing rules in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "What law introduced the mandatory e-invoicing obligation in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Until when does the tolerance period for e-invoicing infringements run in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "When was the Belgian Royal Decree on structured electronic invoices published?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+
+# --- Grounded cases: "Required format and network" ---
+- question: "What invoice format do I need to use in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Can I just email a PDF invoice instead of using Peppol in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "What network do I need to send structured invoices through in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Is Peppol BIS Billing 3.0 mandatory for Belgian e-invoices?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Can I send invoice attachments by email separately from the Peppol invoice in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+
+# --- Grounded cases: "Penalties" ---
+- question: "What's the fine if I can't send structured e-invoices in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "rsm.global"
+- question: "How much is the penalty for a second e-invoicing infringement in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "rsm.global"
+- question: "Do I get a warning before being fined for e-invoicing non-compliance in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "rsm.global"
+- question: "What happens if I don't comply with the Belgian e-invoicing rules after the tolerance period ends?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "rsm.global"
+- question: "Is there a maximum fine for repeated e-invoicing violations in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "rsm.global"
+
+# --- Grounded cases: "Common exemptions" ---
+- question: "Am I exempt from the Belgian e-invoicing mandate if I only perform VAT-exempt medical services?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Are bankrupt companies exempt from the structured e-invoicing obligation in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Is a foreign business that is only VAT-registered in Belgium, with no permanent establishment, exempt from e-invoicing?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Does the flat-rate VAT scheme exempt me from structured e-invoicing in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+- question: "Do I need structured e-invoices for sales to private consumers (B2C) in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "einvoice.belgium.be"
+
+# --- Refusal cases: countries not yet in the knowledge base ---
+- question: "What are the e-invoicing rules for businesses in Germany?"
+  country: "DE"
+  expected_refused: true
+- question: "When does France require businesses to receive e-invoices?"
+  country: "FR"
+  expected_refused: true
+- question: "What format does Poland require for structured e-invoices under KSeF?"
+  country: "PL"
+  expected_refused: true
+
+# --- Refusal cases: unrelated / out-of-scope topics within a valid country ---
+- question: "What's the best pizza topping?"
+  country: "BE"
+  expected_refused: true
+- question: "How do I bake sourdough bread?"
+  country: "BE"
+  expected_refused: true
+- question: "What's the weather like in Brussels today?"
+  country: "BE"
+  expected_refused: true
+- question: "Can you recommend a good accountant in Brussels?"
+  country: "BE"
+  expected_refused: true
+- question: "What is the capital of France?"
+  country: "BE"
+  expected_refused: true

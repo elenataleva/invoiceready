@@ -6,12 +6,14 @@ from app.models import RuleChunk
 
 DEFAULT_TOP_K = 4
 
-# Empirically checked against real ingested BE content (Task 8/9): unrelated
-# questions topped out around 0.11 cosine similarity, genuinely related
-# questions scored 0.35-0.47. 0.3 sits in that gap.
-# TODO: tune against eval set in Task 12, once out-of-scope test questions
-# for all three countries exist.
-DEFAULT_SIMILARITY_THRESHOLD = 0.3
+# Tuned against tests/eval_set.yaml (Task 12): the 26-case grounded eval
+# set's lowest max-similarity was 0.59; the eval's refusal cases topped out
+# at 0.43 (a tangentially-worded but out-of-scope question shared enough
+# BE-related vocabulary to score higher than the earlier 0.11-0.47 probe
+# set from Task 9 suggested). 0.3 let that case through as a false
+# grounded answer - see scripts/run_eval.py. 0.5 sits in the middle of the
+# real 0.43/0.59 gap, with margin on both sides.
+DEFAULT_SIMILARITY_THRESHOLD = 0.5
 
 
 def retrieve(

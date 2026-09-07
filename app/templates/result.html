@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Your e-invoicing obligations — InvoiceReady{% endblock %}
+
+{% block content %}
+<h1>Your obligations</h1>
+<p class="lede">Based on a {{ profile.country }} business with {{ profile.employee_count }} employee(s).</p>
+
+{% if not result.in_scope %}
+  <div class="notice">
+    <p>No e-invoicing obligations matched this profile in our rule set for {{ profile.country }}.</p>
+    <p>That is not the same as "you have none" — it means we hold no reviewed rule that applies to
+       you. Check the official source for your country before concluding you are out of scope.</p>
+  </div>
+{% else %}
+  {% for obligation in result.obligations %}
+    <div class="obligation">
+      <h2>{{ obligation.rule_type }}</h2>
+      <dl>
+        <dt>Applies from</dt><dd>{{ obligation.applies_from }}</dd>
+        {% if obligation.format_required %}
+          <dt>Format</dt><dd>{{ obligation.format_required }}</dd>
+        {% endif %}
+        {% if obligation.network %}
+          <dt>Network</dt><dd>{{ obligation.network }}</dd>
+        {% endif %}
+      </dl>
+      {% if obligation.explanation %}<p>{{ obligation.explanation }}</p>{% endif %}
+      <p class="source">
+        Source: <a href="{{ obligation.source_url }}">{{ obligation.source_url }}</a>
+        — reviewed {{ obligation.source_reviewed_at }}
+      </p>
+    </div>
+  {% endfor %}
+
+  {% if result.next_steps %}
+    <h2>Next steps</h2>
+    <ol>
+      {% for step in result.next_steps %}<li>{{ step }}</li>{% endfor %}
+    </ol>
+  {% endif %}
+{% endif %}
+
+<p><a href="/">Start over</a></p>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}InvoiceReady — check your e-invoicing obligations{% endblock %}
+
+{% block content %}
+<h1>Check your e-invoicing obligations</h1>
+<p class="lede">Answer five questions about your business and see what applies to you, with sources.</p>
+
+<form method="post" action="/assess">
+  <label for="country">Country</label>
+  <select id="country" name="country" required>
+    {% for country in countries %}
+      <option value="{{ country.code }}">
+        {{ country.name }} — last reviewed {{ country.last_reviewed }}
+      </option>
+    {% else %}
+      <option value="" disabled>No countries loaded yet</option>
+    {% endfor %}
+  </select>
+
+  <label for="vat_registered">VAT registered?</label>
+  <select id="vat_registered" name="vat_registered">
+    <option value="true">Yes</option>
+    <option value="false">No</option>
+  </select>
+
+  <label for="employee_count">Number of employees</label>
+  <input id="employee_count" type="number" name="employee_count" min="0" value="0" required />
+
+  <label for="annual_turnover_eur">Annual turnover (EUR)</label>
+  <input id="annual_turnover_eur" type="number" name="annual_turnover_eur" min="0" placeholder="Leave blank if unsure" />
+
+  <fieldset>
+    <legend>Who do you invoice?</legend>
+    {% for option in counterparty_options %}
+      <label><input type="checkbox" name="invoices_to" value="{{ option }}" /> {{ option }}</label>
+    {% endfor %}
+  </fieldset>
+
+  <button type="submit">Check my obligations</button>
+</form>
+{% endblock %}

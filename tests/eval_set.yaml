@@ -124,14 +124,12 @@
   expected_source_contains: "einvoice.belgium.be"
 
 # --- Refusal cases: countries not yet in the knowledge base ---
+# Only DE remains here. The FR and PL cases that used to sit in this
+# block were written in Task 12, when neither country had a knowledge
+# base file; Task 16 added both, so they moved to the grounded sections
+# below rather than being deleted.
 - question: "What are the e-invoicing rules for businesses in Germany?"
   country: "DE"
-  expected_refused: true
-- question: "When does France require businesses to receive e-invoices?"
-  country: "FR"
-  expected_refused: true
-- question: "What format does Poland require for structured e-invoices under KSeF?"
-  country: "PL"
   expected_refused: true
 
 # --- Refusal cases: unrelated / out-of-scope topics within a valid country ---
@@ -149,4 +147,85 @@
   expected_refused: true
 - question: "What is the capital of France?"
   country: "BE"
+  expected_refused: true
+
+# --- Grounded cases: Poland (knowledge_base/PL.md) ---
+- question: "Do I need to use KSeF if my company is registered in Poland?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ksef.podatki.gov.pl"
+- question: "When do small businesses in Poland have to start issuing invoices through KSeF?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ksef.podatki.gov.pl"
+- question: "What invoice format do I need to use in Poland?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ksef.podatki.gov.pl"
+- question: "What are the penalties for not using KSeF in Poland?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "infor.pl"
+- question: "Are invoices to private consumers excluded from KSeF in Poland?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ksef.podatki.gov.pl"
+- question: "What format does Poland require for structured e-invoices under KSeF?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ksef.podatki.gov.pl"
+
+# --- Grounded cases: France (knowledge_base/FR.md) ---
+- question: "Which businesses are covered by the French electronic invoicing obligation?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+- question: "When must French SMEs start issuing electronic invoices?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+- question: "What invoice format do I need to use in France?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "impots.gouv.fr"
+- question: "What is the fine for not issuing an electronic invoice in France?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+- question: "Are B2C sales covered by the French e-invoicing obligation?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+- question: "How long must I keep electronic invoices in France?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+- question: "When does France require businesses to receive e-invoices?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "service-public.gouv.fr"
+
+# --- Refusal cases: Poland and France ---
+# Same intent as the BE refusal cases: plausible-sounding questions from a
+# business owner that our sources genuinely do not answer. The tax-rate and
+# payroll-provider cases sit closest to the threshold (measured 0.46 and
+# 0.47 similarity against a 0.5 cut-off) and are the ones most likely to
+# regress if the knowledge base or threshold changes.
+- question: "Can you recommend a good accountant in Warsaw?"
+  country: "PL"
+  expected_refused: true
+- question: "What is the corporate income tax rate in Poland?"
+  country: "PL"
+  expected_refused: true
+- question: "What is the weather like in Krakow today?"
+  country: "PL"
+  expected_refused: true
+- question: "Can you recommend a payroll provider in Paris?"
+  country: "FR"
+  expected_refused: true
+- question: "How do I register a new company in France?"
+  country: "FR"
+  expected_refused: true
+- question: "Which French wine goes best with cheese?"
+  country: "FR"
   expected_refused: true

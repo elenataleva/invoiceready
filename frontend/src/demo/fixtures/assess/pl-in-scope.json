@@ -1,0 +1,49 @@
+{
+  "request": {
+    "annual_turnover_eur": 250000,
+    "country": "PL",
+    "employee_count": 5,
+    "invoices_to": [
+      "B2B"
+    ],
+    "vat_registered": true
+  },
+  "response": {
+    "disclaimer": "Informational guidance only, not tax or legal advice.",
+    "in_scope": true,
+    "next_steps": [
+      "Check with your invoicing or accounting software provider to confirm they support KSeF and the FA(3) structured XML format ahead of the April 2026 deadline.",
+      "Set up access to the KSeF platform for your business so you can both send and receive invoices through it before your applicable start dates.",
+      "Review the official KSeF resource at https://ksef.podatki.gov.pl/ for registration steps and technical guidance specific to your business size."
+    ],
+    "obligations": [
+      {
+        "applies_from": "2026-02-01",
+        "explanation": "From 1 February 2026, your business must be able to receive invoices in the FA(3) structured XML format through Poland's KSeF network. There are no penalties for this during 2026, but from 1 January 2027, penalties may apply of up to 100% of the VAT shown on an invoice issued outside KSeF, or up to 18.7% of the gross amount if no VAT is shown.",
+        "format_required": "FA(3) structured XML",
+        "network": "KSeF",
+        "rule_type": "receive",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://ksef.podatki.gov.pl/"
+      },
+      {
+        "applies_from": "2026-02-01",
+        "explanation": "This obligation applies specifically to large taxpayers (those with 2024 turnover over PLN 200 million) and requires issuing invoices in FA(3) structured XML format via KSeF starting 1 February 2026. Based on your profile, this specific category may not apply to you, but it's listed here as part of the full KSeF rollout schedule. The same penalty terms apply: none in 2026, then possible penalties from 2027 as described above.",
+        "format_required": "FA(3) structured XML",
+        "network": "KSeF",
+        "rule_type": "issue (large taxpayers: 2024 turnover over PLN 200 million)",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://ksef.podatki.gov.pl/"
+      },
+      {
+        "applies_from": "2026-04-01",
+        "explanation": "From 1 April 2026, as a VAT-registered business, you will need to issue invoices in the FA(3) structured XML format through KSeF. This is the general rule covering most VAT taxpayers, including SMEs like yours. No penalties apply during 2026, but from 1 January 2027, penalties may apply of up to 100% of the VAT shown on an invoice issued outside KSeF, or up to 18.7% of the gross amount if no VAT is shown.",
+        "format_required": "FA(3) structured XML",
+        "network": "KSeF",
+        "rule_type": "issue (all other VAT taxpayers, including sole traders and SMEs)",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://ksef.podatki.gov.pl/"
+      }
+    ]
+  }
+}

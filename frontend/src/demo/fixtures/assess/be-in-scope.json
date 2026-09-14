@@ -1,0 +1,40 @@
+{
+  "request": {
+    "annual_turnover_eur": 250000,
+    "country": "BE",
+    "employee_count": 5,
+    "invoices_to": [
+      "B2B"
+    ],
+    "vat_registered": true
+  },
+  "response": {
+    "disclaimer": "Informational guidance only, not tax or legal advice.",
+    "in_scope": true,
+    "next_steps": [
+      "Look into connecting to the Peppol network, either through a service provider or accounting software that supports Peppol BIS Billing 3.0.",
+      "Check whether your current invoicing or accounting software can send and receive e-invoices in the required format, and upgrade if needed.",
+      "Plan to have this in place before 1 January 2026, keeping in mind the tolerance period runs only until 31 March 2026."
+    ],
+    "obligations": [
+      {
+        "applies_from": "2026-01-01",
+        "explanation": "From 1 January 2026, your business must be able to receive electronic invoices from other businesses in the Peppol BIS Billing 3.0 (EN 16931) format, sent over the Peppol network. If you don't comply, penalties of EUR 1,500, 3,000, or 5,000 can apply for a first, second, or third infringement, though these escalate only if the infringements happen within three months of each other. There is also a tolerance period from 1 January to 31 March 2026 where no e-invoicing-specific penalties apply if you can show reasonable effort to comply.",
+        "format_required": "Peppol BIS Billing 3.0 (EN 16931)",
+        "network": "Peppol",
+        "rule_type": "receive",
+        "source_reviewed_at": "2026-09-04",
+        "source_url": "https://finance.belgium.be/en/enterprises/vat/e-invoicing/mandatory-use-structured-electronic-invoices-2026"
+      },
+      {
+        "applies_from": "2026-01-01",
+        "explanation": "From 1 January 2026, your business must also issue invoices to other businesses in the Peppol BIS Billing 3.0 (EN 16931) format, sent through the Peppol network. The same penalty structure applies: EUR 1,500, 3,000, or 5,000 for a first, second, or third infringement, escalating only if they occur within three months of each other, with a tolerance period from 1 January to 31 March 2026 where no e-invoicing-specific penalties apply if reasonable compliance effort is shown.",
+        "format_required": "Peppol BIS Billing 3.0 (EN 16931)",
+        "network": "Peppol",
+        "rule_type": "issue",
+        "source_reviewed_at": "2026-09-04",
+        "source_url": "https://finance.belgium.be/en/enterprises/vat/e-invoicing/mandatory-use-structured-electronic-invoices-2026"
+      }
+    ]
+  }
+}

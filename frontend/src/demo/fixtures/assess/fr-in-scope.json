@@ -1,0 +1,50 @@
+{
+  "request": {
+    "annual_turnover_eur": 250000,
+    "country": "FR",
+    "employee_count": 5,
+    "invoices_to": [
+      "B2B",
+      "B2C"
+    ],
+    "vat_registered": true
+  },
+  "response": {
+    "disclaimer": "Informational guidance only, not tax or legal advice.",
+    "in_scope": true,
+    "next_steps": [
+      "Start researching Plateforme agr\u00e9\u00e9e (PA) providers now so you can choose one that fits your invoicing volume and budget before the 2026 receiving deadline.",
+      "Check that your accounting or invoicing software can handle or export Factur-X, UBL 2.1, or CII formats, or plan to upgrade in time.",
+      "Mark 1 September 2026 (receiving invoices) and 1 September 2027 (issuing invoices) on your business calendar and revisit your readiness a few months before each date."
+    ],
+    "obligations": [
+      {
+        "applies_from": "2026-09-01",
+        "explanation": "From 1 September 2026, your business will need to be able to receive e-invoices from suppliers in one of the accepted formats (Factur-X, UBL 2.1 or CII, all meeting the EN 16931 standard), delivered via a Plateforme agr\u00e9\u00e9e (PA, formerly known as PDP). Not doing so can lead to penalties of EUR 50 per invoice not issued electronically and EUR 500 per e-reporting breach, capped at EUR 15,000 per year.",
+        "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+        "network": "Plateforme agreee (PA, formerly PDP)",
+        "rule_type": "receive",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+      },
+      {
+        "applies_from": "2026-09-01",
+        "explanation": "This specific obligation to issue e-invoices from 1 September 2026 applies to large enterprises and ETI (mid-sized companies) using the same accepted formats and the Plateforme agr\u00e9\u00e9e network. Based on your profile as a small business, this particular deadline does not appear to be the one that applies to you, but it's listed here as part of the overall rollout schedule.",
+        "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+        "network": "Plateforme agreee (PA, formerly PDP)",
+        "rule_type": "issue (large enterprises and ETI)",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+      },
+      {
+        "applies_from": "2027-09-01",
+        "explanation": "As an SME, your obligation to issue e-invoices (not just receive them) begins on 1 September 2027. You'll need to issue invoices in one of the accepted formats (Factur-X, UBL 2.1 or CII under EN 16931) through a Plateforme agr\u00e9\u00e9e. The same penalty structure applies: EUR 50 per invoice not issued electronically and EUR 500 per e-reporting breach, capped at EUR 15,000 per year.",
+        "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+        "network": "Plateforme agreee (PA, formerly PDP)",
+        "rule_type": "issue (SMEs and micro-enterprises)",
+        "source_reviewed_at": "2026-09-11",
+        "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+      }
+    ]
+  }
+}

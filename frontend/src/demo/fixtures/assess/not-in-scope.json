@@ -1,0 +1,17 @@
+{
+  "request": {
+    "annual_turnover_eur": 250000,
+    "country": "DE",
+    "employee_count": 5,
+    "invoices_to": [
+      "B2B"
+    ],
+    "vat_registered": true
+  },
+  "response": {
+    "disclaimer": "Informational guidance only, not tax or legal advice.",
+    "in_scope": false,
+    "next_steps": [],
+    "obligations": []
+  }
+}

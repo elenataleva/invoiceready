@@ -1,0 +1,11 @@
+{
+  "request": {
+    "country": "DE",
+    "question": "what format do I need"
+  },
+  "response": {
+    "answer": "I don't have grounded information to answer this question. Please check the official source for your country's e-invoicing rules.",
+    "citations": [],
+    "refused": true
+  }
+}

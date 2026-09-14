@@ -5,7 +5,7 @@ business in a short form; it tells you **which e-invoicing obligations apply
 to you, from what date, in what format** — and lets you ask follow-up
 questions in plain language. Every factual claim carries a source URL and the
 date that source was last reviewed. When the answer isn't in its sources, it
-says so instead of guessing.
+says so instead of guessing
 
 Covers **Belgium, Poland and France**.
 

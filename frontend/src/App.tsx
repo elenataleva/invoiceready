@@ -1,15 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router"
 
+import { HowItWorks } from "@/pages/HowItWorks"
 import { Landing } from "@/pages/Landing"
+import { Result } from "@/pages/Result"
 
-// Only "/" is registered so far - /result (step 7) and /how-it-works
-// (step 10) are their own build-order steps, not scaffolding to stub out
-// ahead of the work that actually fills them in.
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/result" element={<Result />} />
+        <Route path="/how-it-works" element={<HowItWorks />} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,43 +1,51 @@
-import { useState } from "react"
+import { useNavigate } from "react-router"
 
-import { DisclaimerBar } from "@/components/trust"
+import { Layout } from "@/components/Layout"
+import { AssessmentPreview } from "@/features/assessment"
 import { Wizard } from "@/features/intake/Wizard"
-import type { CompleteIntakeState } from "@/features/intake/types"
-import { toAssessRequest } from "@/features/intake/types"
-import { useIntakeState } from "@/features/intake/useIntakeState"
+import { useIntakeState, writeIntakeState } from "@/features/intake/useIntakeState"
 
 /**
- * `/` - the intake wizard. The split layout with the live assessment
- * preview (docs/04-FRONTEND-DESIGN.md #3.1-#3.2) is build-order step 6b;
- * for now this renders just the left column, plus a plain completion
- * summary standing in for the real submit-to-/result flow (step 7).
+ * `/` - split intake (docs/04-FRONTEND-DESIGN.md #3.1): wizard on the
+ * left, a live assessment preview on the right (#3.2, build-order step
+ * 6b). Below 900px the grid collapses to one column with the preview
+ * moved below the form via plain DOM order - no `order-*` needed, since
+ * the wizard already comes first in markup and a 1-column grid just
+ * stacks children top to bottom.
+ *
+ * Completing the wizard navigates to /result, re-encoding the completed
+ * profile itself (via writeIntakeState) rather than reading
+ * window.location - useIntakeState's URL write on the final step and
+ * this navigation can otherwise race, since the URL update isn't
+ * guaranteed to have flushed before this callback runs.
  */
 export function Landing() {
   const [intake, updateIntake] = useIntakeState()
-  const [completed, setCompleted] = useState<CompleteIntakeState | null>(null)
+  const navigate = useNavigate()
 
   return (
-    <div className="flex min-h-svh flex-col">
-      <main className="mx-auto w-full max-w-xl flex-1 px-6 py-16">
-        <h1 className="mb-8 text-2xl font-medium tracking-tight text-foreground">InvoiceReady</h1>
+    <Layout>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-16">
+        <div className="grid grid-cols-1 gap-8 min-[900px]:grid-cols-2">
+          <div>
+            <h1 className="mb-8 text-2xl font-medium tracking-tight text-foreground">
+              InvoiceReady
+            </h1>
 
-        {completed ? (
-          <div className="space-y-4">
-            <h2 className="text-xl font-medium text-foreground">Profile complete</h2>
-            <p className="text-sm text-muted-foreground">
-              This is the exact body the wizard would now POST to <code>/api/assess</code> - that
-              call, and the result page rendering it, land in a later step.
-            </p>
-            <pre className="overflow-x-auto rounded-lg border border-border bg-muted p-4 text-xs">
-              {JSON.stringify(toAssessRequest(completed), null, 2)}
-            </pre>
+            <Wizard
+              state={intake}
+              onChange={updateIntake}
+              onComplete={(profile) => {
+                const params = new URLSearchParams()
+                writeIntakeState(params, profile)
+                navigate({ pathname: "/result", search: params.toString() })
+              }}
+            />
           </div>
-        ) : (
-          <Wizard state={intake} onChange={updateIntake} onComplete={setCompleted} />
-        )}
-      </main>
 
-      <DisclaimerBar />
-    </div>
+          <AssessmentPreview profile={intake} />
+        </div>
+      </main>
+    </Layout>
   )
 }

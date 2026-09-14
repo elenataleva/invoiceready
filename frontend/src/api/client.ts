@@ -35,12 +35,24 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     // Includes the body text (FastAPI's 422/429 detail, e.g. rate-limit
-    // messages) so a caller - or TanStack Query's error state, once that
-    // lands - has something more useful than a bare status code.
+    // messages) so a caller has something more useful than a bare status
+    // code - e.g. api/liveDataSource.ts's retry/fallback wrapper.
     throw new Error(`${path} failed: ${response.status} ${await response.text()}`)
   }
 
   return response.json() as Promise<T>
+}
+
+/**
+ * Fire-and-forget GET /health, used to start a free-tier server waking up
+ * the moment a visitor flips to live mode (docs/04-FRONTEND-DESIGN.md #6),
+ * before they've actually submitted anything that needs a real answer.
+ */
+export function pingHealth(): void {
+  fetch(`${API_BASE_URL}/health`).catch(() => {
+    // Best-effort prewarm only - a failure here isn't reported anywhere;
+    // the real request that follows will retry and report properly.
+  })
 }
 
 export class HttpDataSource implements DataSource {

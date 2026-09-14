@@ -6,8 +6,16 @@ plumbing. That means running this costs real money. Not wired into the
 default `pytest` collection for exactly that reason - invoke directly:
 
     python scripts/run_eval.py
+
+Also writes frontend/src/data/eval-results.json - a committed, dated
+summary that the /how-it-works page (docs/04-FRONTEND-DESIGN.md #3.5)
+reads at build time. That page is a static bundle with no backend of its
+own to query for "live" numbers, so this file is the mechanism by which
+its eval results are real and dated rather than typed-in copy.
 """
 
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -15,8 +23,12 @@ import yaml
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.rate_limit import limiter
 
 EVAL_SET_PATH = Path(__file__).resolve().parent.parent / "tests" / "eval_set.yaml"
+RESULTS_PATH = (
+    Path(__file__).resolve().parent.parent / "frontend" / "src" / "data" / "eval-results.json"
+)
 
 client = TestClient(app)
 
@@ -44,6 +56,12 @@ def main() -> None:
 
     results: list[tuple[dict[str, Any], bool, str]] = []
     for case in cases:
+        # app/rate_limit.py's 10/minute cap is aimed at the public
+        # internet (docs/04-FRONTEND-DESIGN.md #7.4) - this script is a
+        # trusted local tool running 58 cases in one sitting, not that,
+        # so it resets the limiter per case rather than being throttled
+        # by a guard meant for someone else.
+        limiter.reset()
         passed, detail = run_case(case)
         results.append((case, passed, detail))
         status = "PASS" if passed else "FAIL"
@@ -66,6 +84,41 @@ def main() -> None:
             "is non-negotiable - this must be 100% before this system can "
             "be trusted not to hallucinate."
         )
+
+    write_results_json(
+        results, refusal_pass, len(refusal_results), grounded_pass, len(grounded_results)
+    )
+
+
+def write_results_json(
+    results: list[tuple[dict[str, Any], bool, str]],
+    refusal_pass: int,
+    refusal_total: int,
+    grounded_pass: int,
+    grounded_total: int,
+) -> None:
+    payload = {
+        "generated_at": datetime.now(UTC).isoformat(),
+        "total": len(results),
+        "passed": refusal_pass + grounded_pass,
+        "refusal": {"passed": refusal_pass, "total": refusal_total},
+        "grounded": {"passed": grounded_pass, "total": grounded_total},
+        # Question text only, not the generated answer or its citations -
+        # this file is committed, and the point is "the eval set is real
+        # and passing", not a transcript of every model response.
+        "cases": [
+            {
+                "country": case["country"],
+                "question": case["question"],
+                "expected_refused": case["expected_refused"],
+                "passed": passed,
+            }
+            for case, passed, _detail in results
+        ],
+    }
+    RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    RESULTS_PATH.write_text(json.dumps(payload, indent=2) + "\n")
+    print(f"\nWrote {RESULTS_PATH.relative_to(Path.cwd())}")
 
 
 if __name__ == "__main__":

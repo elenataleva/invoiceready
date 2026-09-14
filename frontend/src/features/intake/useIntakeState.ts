@@ -17,7 +17,13 @@ const PARAM_KEYS = {
   invoicesTo: "to",
 } as const
 
-function parseIntakeState(params: URLSearchParams): IntakeState {
+/**
+ * Exported so /result (docs/04-FRONTEND-DESIGN.md #3.3) can reconstruct
+ * the completed profile from its own URL without duplicating the query
+ * key scheme - "the completed profile is the same encoding /result
+ * already reads" (#5.1).
+ */
+export function parseIntakeState(params: URLSearchParams): IntakeState {
   return {
     country: getStringParam(params, PARAM_KEYS.country),
     vatRegistered: getBoolParam(params, PARAM_KEYS.vatRegistered),
@@ -27,7 +33,8 @@ function parseIntakeState(params: URLSearchParams): IntakeState {
   }
 }
 
-function writeIntakeState(params: URLSearchParams, state: IntakeState): void {
+/** Exported for Landing.tsx's navigate-to-/result call - see parseIntakeState's doc comment. */
+export function writeIntakeState(params: URLSearchParams, state: IntakeState): void {
   setOrDeleteParam(params, PARAM_KEYS.country, state.country)
   setOrDeleteParam(
     params,

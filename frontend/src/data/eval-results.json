@@ -1,0 +1,363 @@
+{
+  "generated_at": "2026-09-14T15:26:26.198560+00:00",
+  "total": 58,
+  "passed": 58,
+  "refusal": {
+    "passed": 12,
+    "total": 12
+  },
+  "grounded": {
+    "passed": 46,
+    "total": 46
+  },
+  "cases": [
+    {
+      "country": "BE",
+      "question": "Do I need to issue structured e-invoices if I'm a VAT-registered business in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Does the Belgian e-invoicing mandate apply to small businesses, or only large companies?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "I only invoice private consumers, not other businesses - do I need to comply with the Belgian e-invoicing mandate?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Is a Belgian VAT group covered by the structured e-invoicing obligation?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Does using the small-enterprise VAT exemption scheme mean I don't need structured e-invoices in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Who exactly is required to send structured electronic invoices in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "When does the Belgian e-invoicing mandate start?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Is there a grace period before penalties apply for the new e-invoicing rules in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What law introduced the mandatory e-invoicing obligation in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Until when does the tolerance period for e-invoicing infringements run in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "When was the Belgian Royal Decree on structured electronic invoices published?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What invoice format do I need to use in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Can I just email a PDF invoice instead of using Peppol in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What network do I need to send structured invoices through in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Is Peppol BIS Billing 3.0 mandatory for Belgian e-invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Can I send invoice attachments by email separately from the Peppol invoice in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What's the fine if I can't send structured e-invoices in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "How much is the penalty for a second e-invoicing infringement in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Do I get a warning before being fined for e-invoicing non-compliance in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What happens if I don't comply with the Belgian e-invoicing rules after the tolerance period ends?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Is there a maximum fine for repeated e-invoicing violations in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Am I exempt from the Belgian e-invoicing mandate if I only perform VAT-exempt medical services?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Are bankrupt companies exempt from the structured e-invoicing obligation in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Is a foreign business that is only VAT-registered in Belgium, with no permanent establishment, exempt from e-invoicing?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Does the flat-rate VAT scheme exempt me from structured e-invoicing in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Do I need structured e-invoices for sales to private consumers (B2C) in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "DE",
+      "question": "What are the e-invoicing rules for businesses in Germany?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What's the best pizza topping?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "How do I bake sourdough bread?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What's the weather like in Brussels today?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Can you recommend a good accountant in Brussels?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "What is the capital of France?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "Do I need to use KSeF if my company is registered in Poland?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "When do small businesses in Poland have to start issuing invoices through KSeF?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "What invoice format do I need to use in Poland?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "What are the penalties for not using KSeF in Poland?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "Are invoices to private consumers excluded from KSeF in Poland?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "What format does Poland require for structured e-invoices under KSeF?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "Which businesses are covered by the French electronic invoicing obligation?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "When must French SMEs start issuing electronic invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "What invoice format do I need to use in France?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "What is the fine for not issuing an electronic invoice in France?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "Are B2C sales covered by the French e-invoicing obligation?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "How long must I keep electronic invoices in France?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "When does France require businesses to receive e-invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "Can you recommend a good accountant in Warsaw?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "What is the corporate income tax rate in Poland?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "What is the weather like in Krakow today?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "Can you recommend a payroll provider in Paris?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "How do I register a new company in France?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "Which French wine goes best with cheese?",
+      "expected_refused": true,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Do I have to keep all the invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "Do I have to archive invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "BE",
+      "question": "How long must I keep invoices in Belgium?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "PL",
+      "question": "Do I have to archive invoices myself if I use KSeF?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "Do I have to archive invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "How many years do I need to store invoices?",
+      "expected_refused": false,
+      "passed": true
+    },
+    {
+      "country": "FR",
+      "question": "What is the retention period for invoices?",
+      "expected_refused": false,
+      "passed": true
+    }
+  ]
+}

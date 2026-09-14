@@ -1,5 +1,7 @@
 import { HttpDataSource, type DataSource } from "@/api/client"
 import { DemoDataSource } from "@/api/demo"
+import { createLiveDataSource } from "@/api/liveDataSource"
+import { useLiveMode } from "@/api/liveMode"
 
 export type {
   AskRequest,
@@ -10,44 +12,24 @@ export type {
   Obligation,
 } from "@/api/client"
 export type { DataSource } from "@/api/client"
+export { useLiveMode, useIsWaking, useDataSourceNotice } from "@/api/liveMode"
 
-const LIVE_STORAGE_KEY = "invoiceready:live"
+// Singletons, not re-created per render - createLiveDataSource wraps the
+// same two instances every time, so its internal retry/backoff state
+// (none currently, but the interface would want it) isn't reset on every
+// mode toggle.
+const httpInstance = new HttpDataSource()
+const demoInstance = new DemoDataSource()
+const liveInstance = createLiveDataSource(httpInstance, demoInstance)
 
 /**
- * Demo is the deployed default; a visitor opts into live with `?live=1`,
- * which persists to localStorage so a direct live link keeps working on
- * the next visit (docs/04-FRONTEND-DESIGN.md #6). The `?live=1` param
- * itself is left in the URL for the cold-start wake UI (build-order step
- * 9) to key off, rather than being stripped here.
+ * The one place a component decides "demo or live" - returns a different
+ * DataSource identity when the mode flips, so an effect that depends on
+ * this hook's return value naturally refetches (docs/04-FRONTEND-DESIGN.md
+ * #6). Replaces the old load-time-only `dataSource` constant, which had
+ * no way to react to the header pill's toggle.
  */
-function wantsLive(): boolean {
-  if (typeof window === "undefined") return false
-
-  const params = new URLSearchParams(window.location.search)
-  if (params.get("live") === "1") {
-    try {
-      window.localStorage.setItem(LIVE_STORAGE_KEY, "1")
-    } catch {
-      // localStorage can throw (private browsing, blocked site data) - the
-      // query param still selects live for this page view either way.
-    }
-    return true
-  }
-
-  try {
-    return window.localStorage.getItem(LIVE_STORAGE_KEY) === "1"
-  } catch {
-    return false
-  }
+export function useDataSource(): DataSource {
+  const [live] = useLiveMode()
+  return live ? liveInstance : demoInstance
 }
-
-function selectDataSource(): DataSource {
-  // Escape hatch for environments (CI, Playwright) where a stray
-  // localStorage flag from a previous run shouldn't be able to make a
-  // test suddenly start hitting a real backend.
-  if (import.meta.env.VITE_DEMO_MODE === "true") return new DemoDataSource()
-
-  return wantsLive() ? new HttpDataSource() : new DemoDataSource()
-}
-
-export const dataSource: DataSource = selectDataSource()

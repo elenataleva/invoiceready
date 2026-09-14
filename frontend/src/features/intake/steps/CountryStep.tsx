@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 
-import { dataSource } from "@/api"
+import { useDataSource } from "@/api"
 import type { Country } from "@/api/client"
 import { CoverageIndicator, Skeleton } from "@/components/trust"
 import { Button } from "@/components/ui/button"
@@ -16,17 +16,23 @@ interface CountryStepProps {
 }
 
 export function CountryStep({ defaultValue, onNext }: CountryStepProps) {
+  const ds = useDataSource()
   const [countries, setCountries] = useState<Country[] | null>(null)
 
   useEffect(() => {
+    // ds's identity changes when the live/demo toggle flips (@/api's
+    // useDataSource), so resetting to null here re-shows the skeleton
+    // for the moment it takes to refetch under the new mode - correct
+    // behaviour, not a bug the reset-in-effect pattern usually warns about.
     let cancelled = false
-    dataSource.countries().then((result) => {
+    setCountries(null)
+    ds.countries().then((result) => {
       if (!cancelled) setCountries(result)
     })
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [ds])
 
   const form = useForm<CountryStepValues>({
     resolver: zodResolver(countryStepSchema),

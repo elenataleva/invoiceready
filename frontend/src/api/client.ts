@@ -7,6 +7,7 @@ import type { components } from "@/api/schema"
 export type Country = components["schemas"]["CountryOut"]
 export type AssessRequest = components["schemas"]["AssessRequest"]
 export type AssessResponse = components["schemas"]["AssessResponse"]
+export type Obligation = components["schemas"]["Obligation"]
 export type AskRequest = components["schemas"]["AskRequest"]
 export type AskResponse = components["schemas"]["AskResponse"]
 

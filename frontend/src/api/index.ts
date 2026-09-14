@@ -1,7 +1,14 @@
 import { HttpDataSource, type DataSource } from "@/api/client"
 import { DemoDataSource } from "@/api/demo"
 
-export type { AskRequest, AskResponse, AssessRequest, AssessResponse, Country } from "@/api/client"
+export type {
+  AskRequest,
+  AskResponse,
+  AssessRequest,
+  AssessResponse,
+  Country,
+  Obligation,
+} from "@/api/client"
 export type { DataSource } from "@/api/client"
 
 const LIVE_STORAGE_KEY = "invoiceready:live"

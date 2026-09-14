@@ -42,3 +42,19 @@ def no_real_query_rewrite(monkeypatch: pytest.MonkeyPatch) -> None:
     """
     monkeypatch.setattr("app.routers.ask.rewrite_query", lambda db, country, question: question)
     monkeypatch.setattr("app.retrieval.rewrite_query", lambda db, country, question: question)
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter() -> None:
+    """Clear slowapi's in-memory counters between tests.
+
+    The Limiter (app/rate_limit.py) is a single instance shared by the one
+    `app` object every test's TestClient hits, and TestClient requests all
+    report the same client address - so without a reset, unrelated tests
+    calling /api/ask or /api/assess several times each would accumulate
+    toward the same 10/minute budget and eventually 429 a test that has
+    nothing to do with rate limiting.
+    """
+    from app.rate_limit import limiter
+
+    limiter.reset()

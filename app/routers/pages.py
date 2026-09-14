@@ -60,8 +60,10 @@ def submit_intake(
         invoices_to=invoices_to,
     )
     # Calls the Task 13 endpoint function directly rather than over HTTP: same
-    # logic, same caching, no second connection to our own server.
-    result = assess(profile, db)
+    # logic, same caching, no second connection to our own server. assess()
+    # now also rate-limits (per docs/04-FRONTEND-DESIGN.md #7.4), keyed off
+    # this same request's client IP since it's a real Request, not a stub.
+    result = assess(request, profile, db)
     return templates.TemplateResponse(
         request, "result.html", {"profile": profile, "result": result}
     )

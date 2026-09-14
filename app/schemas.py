@@ -14,6 +14,15 @@ class AskResponse(BaseModel):
     refused: bool
 
 
+class CountryOut(BaseModel):
+    """What a frontend needs to render country choices without hardcoding coverage."""
+
+    code: str
+    name: str
+    status: str
+    last_reviewed: date
+
+
 class AssessRequest(BaseModel):
     country: str
     vat_registered: bool

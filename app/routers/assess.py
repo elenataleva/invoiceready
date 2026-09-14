@@ -2,7 +2,7 @@ import hashlib
 import json
 
 import structlog
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -10,6 +10,7 @@ from app.db import get_db
 from app.llm import call_claude
 from app.logging_setup import log_query
 from app.models import QueryLog, Rule
+from app.rate_limit import ASK_ASSESS_RATE_LIMIT, limiter
 from app.rules_engine import get_applicable_rules
 from app.schemas import AssessRequest, AssessResponse, Obligation
 
@@ -136,13 +137,14 @@ def _generate(db: Session, request: AssessRequest, rules: list[Rule]) -> dict:
 
 
 @router.post(ENDPOINT)
-def assess(request: AssessRequest, db: Session = Depends(get_db)) -> AssessResponse:
+@limiter.limit(ASK_ASSESS_RATE_LIMIT)
+def assess(request: Request, body: AssessRequest, db: Session = Depends(get_db)) -> AssessResponse:
     rules = get_applicable_rules(
         db,
-        country=request.country,
-        employee_count=request.employee_count,
-        annual_turnover_eur=request.annual_turnover_eur,
-        invoices_to=request.invoices_to,
+        country=body.country,
+        employee_count=body.employee_count,
+        annual_turnover_eur=body.annual_turnover_eur,
+        invoices_to=body.invoices_to,
     )
 
     if not rules:
@@ -152,24 +154,24 @@ def assess(request: AssessRequest, db: Session = Depends(get_db)) -> AssessRespo
         log_query(
             db,
             endpoint=ENDPOINT,
-            request_payload={"profile": request.model_dump(mode="json"), "in_scope": False},
+            request_payload={"profile": body.model_dump(mode="json"), "in_scope": False},
             retrieved_ids=[],
         )
         return AssessResponse(in_scope=False, obligations=[], next_steps=[], disclaimer=DISCLAIMER)
 
-    profile_hash = _profile_hash(request, rules)
+    profile_hash = _profile_hash(body, rules)
     generated = _cached_generation(db, profile_hash)
 
     rule_ids = [rule.id for rule in rules]
 
     if generated is None:
-        generated = _generate(db, request, rules)
+        generated = _generate(db, body, rules)
         log_query(
             db,
             endpoint=CACHE_ENDPOINT,
             request_payload={
                 "profile_hash": profile_hash,
-                "profile": request.model_dump(mode="json"),
+                "profile": body.model_dump(mode="json"),
             },
             retrieved_ids=rule_ids,
             response_text=json.dumps(generated),
@@ -178,7 +180,7 @@ def assess(request: AssessRequest, db: Session = Depends(get_db)) -> AssessRespo
         log_query(
             db,
             endpoint=CACHE_HIT_ENDPOINT,
-            request_payload={"profile": request.model_dump(mode="json")},
+            request_payload={"profile": body.model_dump(mode="json")},
             retrieved_ids=rule_ids,
             response_text=json.dumps(generated),
         )

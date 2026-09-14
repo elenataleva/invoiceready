@@ -1,0 +1,31 @@
+# Secrets - must never enter the image (CLAUDE.md: keys come from env vars only)
+.env
+.env.*
+!.env.example
+
+# Local virtualenv and Python build artefacts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Version control and editor state
+.git/
+.gitignore
+.github/
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.claude/
+
+# Not needed at runtime: tests run in CI/locally, docs are for humans.
+tests/
+docs/
+
+# OS noise
+.DS_Store

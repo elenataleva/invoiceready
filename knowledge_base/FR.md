@@ -2,7 +2,7 @@
 
 - **Country code:** FR
 - **Status:** live
-- **Last reviewed:** 2026-09-11
+- **Last reviewed:** 2026-09-14
 
 This file is the curated, sourced knowledge base for France, used by
 InvoiceReady's retrieval layer. Every factual claim below carries a source
@@ -63,8 +63,9 @@ A practical consequence worth stating plainly: a small French business has
 even though it does not have to issue them until 1 September 2027. Being in
 the later issuing cohort is not a reason to have done nothing.
 
-Electronic invoices must be **retained for 6 years** from the date of
-issue.
+Electronic invoices must be retained for **at least 6 years**, and in
+practice for **10 years** - see "Record keeping and archiving" below, which
+sets out both obligations.
 
 **Sources:**
 - https://entreprendre.service-public.gouv.fr/vosdroits/F23208 (dates and size definitions; reviewed 2026-09-11)
@@ -147,3 +148,40 @@ obligation to *issue*.
 **Sources:**
 - https://entreprendre.service-public.gouv.fr/vosdroits/F23208 (scope, exclusions and franchise micro-entrepreneurs; reviewed 2026-09-11)
 - https://www.economie.gouv.fr/tout-savoir-sur-la-facturation-electronique-pour-les-entreprises (scope of the reform; reviewed 2026-09-11)
+
+## Record keeping and archiving
+
+Yes - you have to keep your invoices. You must keep **every invoice you
+issue and every invoice you receive**, and be able to produce them on
+request.
+
+France has **two overlapping retention obligations**, and the longer one
+governs in practice. A business that keeps invoices for only 6 years is
+compliant with the tax code but not with the commercial code.
+
+- **6 years — fiscal obligation.** Article L102 B of the Livre des
+  procédures fiscales, counted from the last operation recorded on the
+  document. This is the window during which the tax administration can
+  exercise its audit rights.
+- **10 years — commercial obligation.** Article L123-22 of the Code de
+  commerce, counted from the end of the financial year the invoices relate
+  to. Its purpose is accounting traceability and the resolution of
+  commercial disputes.
+- **In practice, keep invoices for 10 years**, since the longer period
+  takes precedence.
+
+The 2026 e-invoicing reform **did not change these periods** - it changed
+the medium, not the timeline. An invoice issued electronically must be
+preserved in its original format for the full legal duration, with
+authenticity of origin, integrity of content and legibility guaranteed,
+either through a reliable audit trail or through a structured format such
+as Factur-X.
+
+Note that an approved platform (PA) is **not automatically your archive**.
+Unlike Poland's KSeF, which stores structured invoices for 10 years,
+platform archiving in France is a service that may or may not be included -
+check what your chosen platform actually retains, and for how long.
+
+**Sources:**
+- https://www.legifiscal.fr/vie-affaires/creation-entreprise/conservation-factures.html (the two periods and their legal basis; reviewed 2026-09-14)
+- https://www.pennylane.com/fr/fiches-pratiques/facture-electronique/archivage-des-factures-electroniques (electronic archiving requirements; reviewed 2026-09-14)

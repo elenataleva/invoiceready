@@ -229,3 +229,39 @@
 - question: "Which French wine goes best with cheese?"
   country: "FR"
   expected_refused: true
+
+# --- Grounded cases: record keeping and archiving (all three countries) ---
+# Added after a real user asked "Do I have to keep all the invoices?" and was
+# refused. Two different bugs sat behind that: BE.md had no archiving content
+# at all, and FR.md had the retention fact buried inside a section about
+# deadlines, where only one phrasing in five retrieved it. Both are pinned
+# here by phrasing, not just by topic - the phrasings below are the ones that
+# measurably failed before the fix.
+- question: "Do I have to keep all the invoices?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "accountable.eu"
+- question: "Do I have to archive invoices?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "accountable.eu"
+- question: "How long must I keep invoices in Belgium?"
+  country: "BE"
+  expected_refused: false
+  expected_source_contains: "accountable.eu"
+- question: "Do I have to archive invoices myself if I use KSeF?"
+  country: "PL"
+  expected_refused: false
+  expected_source_contains: "ifirma.pl"
+- question: "Do I have to archive invoices?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "legifiscal.fr"
+- question: "How many years do I need to store invoices?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "legifiscal.fr"
+- question: "What is the retention period for invoices?"
+  country: "FR"
+  expected_refused: false
+  expected_source_contains: "legifiscal.fr"

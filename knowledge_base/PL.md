@@ -2,7 +2,7 @@
 
 - **Country code:** PL
 - **Status:** live
-- **Last reviewed:** 2026-09-11
+- **Last reviewed:** 2026-09-14
 
 This file is the curated, sourced knowledge base for Poland, used by
 InvoiceReady's retrieval layer. Every factual claim below carries a source
@@ -140,3 +140,31 @@ a permanent exemption, and it ends on 31 December 2026.
 - https://symfonia.pl/blog/firmy/male-firmy/jakich-faktur-nie-mozna-wystawic-przez-ksef/ (Symfonia, list of exclusions; reviewed 2026-09-11)
 - https://akademialtca.pl/blog/czy-podatnicy-zagraniczni-bez-stalego-miejsca-dzialalnosci-sa-wylaczeni-z-ksef (foreign taxpayers; reviewed 2026-09-11)
 - https://ksef.podatki.gov.pl/ (reviewed 2026-09-11)
+
+## Record keeping and archiving
+
+You must be able to produce **every invoice you issue and every invoice
+you receive** - but in Poland you do not have to archive all of them
+yourself.
+
+For structured invoices, **KSeF stores the invoice for you**. This is the
+main practical difference from Belgium or France, where archiving stays
+the business's own responsibility.
+
+- KSeF retains structured invoices for **10 years**, counted from the end
+  of the year in which the invoice was issued. For those invoices the
+  taxpayer is **relieved of the obligation to archive them independently**.
+- If the tax liability has not expired after those 10 years, the business
+  must then store the documents itself, electronically or on paper, until
+  it does. **KSeF deletes invoices after the 10-year period**, so anything
+  needed for longer must be exported and kept separately before then.
+- KSeF's storage covers **only structured invoices that passed through it**.
+  Everything else remains the taxpayer's own responsibility, including
+  contracts, warehouse documents, proof of payment, and cost invoices
+  issued outside KSeF - for example by a foreign supplier.
+- Documents kept outside KSeF must preserve their **authenticity of origin,
+  integrity of content, and legibility**, in paper or electronic form.
+
+**Sources:**
+- https://www.ifirma.pl/blog/ksef-i-fakturowanie/przechowywanie-faktur-ustrukturyzowanych/ (10-year KSeF retention and relief from self-archiving; reviewed 2026-09-14)
+- https://jpk.info.pl/faktury/przechowywanie-faktur/ (documents outside KSeF; reviewed 2026-09-14)

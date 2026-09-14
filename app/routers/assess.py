@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.llm import call_claude
+from app.logging_setup import log_query
 from app.models import QueryLog, Rule
 from app.rules_engine import get_applicable_rules
 from app.schemas import AssessRequest, AssessResponse, Obligation
@@ -22,6 +23,11 @@ ENDPOINT = "/api/assess"
 # app/llm.py, so they need their own endpoint marker to be distinguishable
 # (both for lookup here and for Task 18's logging audit).
 CACHE_ENDPOINT = "/api/assess:cache"
+
+# A request served from that cache makes no LLM call, so without its own
+# marker it would leave no query_logs trace at all - the endpoint would
+# appear to stop being used the moment caching started working.
+CACHE_HIT_ENDPOINT = "/api/assess:cache-hit"
 
 # The LLM writes prose only. Every date, threshold, format and network in
 # the response comes from the rules table (CLAUDE.md, non-negotiable).
@@ -117,6 +123,7 @@ def _generate(db: Session, request: AssessRequest, rules: list[Rule]) -> dict:
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
         max_tokens=EXPLANATION_MAX_TOKENS,
+        retrieved_ids=[rule.id for rule in rules],
     )
 
     try:
@@ -140,24 +147,41 @@ def assess(request: AssessRequest, db: Session = Depends(get_db)) -> AssessRespo
 
     if not rules:
         # Nothing applies - no prose to generate, so no LLM call at all.
+        # Logged anyway: "no rule matched this profile" is exactly the
+        # signal that tells us the rules table has a gap.
+        log_query(
+            db,
+            endpoint=ENDPOINT,
+            request_payload={"profile": request.model_dump(mode="json"), "in_scope": False},
+            retrieved_ids=[],
+        )
         return AssessResponse(in_scope=False, obligations=[], next_steps=[], disclaimer=DISCLAIMER)
 
     profile_hash = _profile_hash(request, rules)
     generated = _cached_generation(db, profile_hash)
 
+    rule_ids = [rule.id for rule in rules]
+
     if generated is None:
         generated = _generate(db, request, rules)
-        db.add(
-            QueryLog(
-                endpoint=CACHE_ENDPOINT,
-                request_payload={
-                    "profile_hash": profile_hash,
-                    "profile": request.model_dump(mode="json"),
-                },
-                response_text=json.dumps(generated),
-            )
+        log_query(
+            db,
+            endpoint=CACHE_ENDPOINT,
+            request_payload={
+                "profile_hash": profile_hash,
+                "profile": request.model_dump(mode="json"),
+            },
+            retrieved_ids=rule_ids,
+            response_text=json.dumps(generated),
         )
-        db.commit()
+    else:
+        log_query(
+            db,
+            endpoint=CACHE_HIT_ENDPOINT,
+            request_payload={"profile": request.model_dump(mode="json")},
+            retrieved_ids=rule_ids,
+            response_text=json.dumps(generated),
+        )
 
     explanations = generated.get("explanations", [])
     obligations = [

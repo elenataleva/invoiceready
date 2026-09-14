@@ -6,7 +6,7 @@ from anthropic.types import MessageParam
 from sqlalchemy.orm import Session
 
 from app.config import Settings
-from app.models import QueryLog
+from app.logging_setup import log_query
 
 logger = structlog.get_logger()
 
@@ -20,14 +20,19 @@ def call_claude(
     system: str,
     messages: list[MessageParam],
     max_tokens: int,
+    retrieved_ids: list[int] | None = None,
+    refused: bool = False,
 ) -> str:
     """Call Claude and log every call - tokens, latency, endpoint - per CLAUDE.md.
 
     max_tokens has no default on purpose: every caller must decide it
     explicitly, since the project's budget is a real constraint (see
-    02-TECHNICAL-DESIGN.md #7). Structured JSON stdout logging is wired up
-    properly in Task 18 (app/logging_setup.py) - this call already uses
-    structlog so no call site needs to change once that lands.
+    02-TECHNICAL-DESIGN.md #7).
+
+    retrieved_ids lets the caller record which chunks or rules grounded
+    this call. It is the caller's to supply because only the router knows
+    what retrieval returned - but it is no longer optional in practice:
+    an answer whose grounding was not recorded cannot be audited later.
     """
     start = time.monotonic()
     response = _client.messages.create(
@@ -51,21 +56,21 @@ def call_claude(
         latency_ms=latency_ms,
     )
 
-    db.add(
-        QueryLog(
-            endpoint=endpoint,
-            request_payload={
-                "model": model,
-                "system": system,
-                "messages": messages,
-                "max_tokens": max_tokens,
-            },
-            response_text=text,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            latency_ms=latency_ms,
-        )
+    log_query(
+        db,
+        endpoint=endpoint,
+        request_payload={
+            "model": model,
+            "system": system,
+            "messages": messages,
+            "max_tokens": max_tokens,
+        },
+        retrieved_ids=retrieved_ids,
+        response_text=text,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        latency_ms=latency_ms,
+        refused=refused,
     )
-    db.commit()
 
     return text

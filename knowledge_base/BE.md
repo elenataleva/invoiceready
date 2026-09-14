@@ -2,7 +2,7 @@
 
 - **Country code:** BE
 - **Status:** live
-- **Last reviewed:** 2026-09-04
+- **Last reviewed:** 2026-09-14
 
 This file is the curated, sourced knowledge base for Belgium, used by
 InvoiceReady's retrieval layer. Every factual claim below carries a source
@@ -142,3 +142,31 @@ does **not** exempt you from this obligation — see "Who is in scope" above.
 **Sources:**
 - https://einvoice.belgium.be/en/FAQ/general-questions-b2b (reviewed 2026-09-04)
 - https://finance.belgium.be/en/enterprises/vat/e-invoicing/mandatory-use-structured-electronic-invoices-2026 (reviewed 2026-09-04)
+
+## Record keeping and archiving
+
+Yes - you have to keep your invoices. You must keep **every invoice you
+issue and every invoice you receive**, and you must be able to produce them
+if the tax authorities ask.
+
+Invoices and accounting records must be kept for **10 years** in Belgium.
+This was harmonised up from the previous 7-year period in 2019.
+
+- The 10 years are counted **from 1 January of the year following** the
+  invoice date. An invoice issued in June 2026 must therefore be kept
+  until at least 1 January 2037.
+- Documents relating to **buildings or land** must be kept for **15 years**
+  under the Belgian VAT Code, not 10.
+- A structured electronic invoice must be archived **in its original
+  structured format** (for example the Peppol BIS / UBL file), unaltered.
+  Printing a structured invoice to PDF and keeping only the PDF does not
+  satisfy the obligation.
+- Throughout the retention period the invoice must stay **readable**, and
+  its **integrity and authenticity** must be guaranteed.
+- The choice of archiving method is free (electronic archiving is
+  encouraged) provided the stored invoices cannot be altered and can be
+  produced to a tax inspector on request.
+
+**Sources:**
+- https://www.accountable.eu/en-be/blog/legal-retention-period-invoices-belgium/ (retention period and start date; reviewed 2026-09-14)
+- https://ecosio.com/en/compliance/belgium/e-invoicing/ (archiving in original structured format; reviewed 2026-09-14)

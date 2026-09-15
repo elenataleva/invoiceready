@@ -1,0 +1,38 @@
+# Render blueprint for the JSON API (docs/04-FRONTEND-DESIGN.md #8).
+#
+# Task 17 deliberately kept the Dockerfile host-agnostic and said not to add
+# platform config "unless you've chosen a specific host". Render is now that
+# host, so this exists to make the deploy reproducible instead of a
+# remembered click-path - but the Dockerfile itself stays portable, and
+# deleting this file is all it takes to move somewhere else.
+#
+# The frontend is NOT here: it's a static bundle on Cloudflare Pages, which
+# has no Render equivalent and is configured in its own dashboard.
+services:
+  - type: web
+    name: invoiceready-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    # Same region as the Neon project (aws-eu-central-1), so the database
+    # round-trip on every request doesn't cross the Atlantic.
+    region: frankfurt
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: production
+
+      # sync: false = "prompt me in the dashboard, don't read it from git".
+      # Secrets never live in this file (CLAUDE.md: keys come from the
+      # environment only).
+      - key: DATABASE_URL
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+      # The Cloudflare Pages origin(s), comma-separated. Set this last: the
+      # Pages domain doesn't exist until the frontend has been deployed
+      # once. Until it's right, the browser blocks every live call with a
+      # CORS error while the API itself looks perfectly healthy.
+      - key: ALLOWED_ORIGINS
+        sync: false

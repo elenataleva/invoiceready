@@ -10,6 +10,7 @@ export type {
   AssessResponse,
   Country,
   Obligation,
+  Rule,
 } from "@/api/client"
 export type { DataSource } from "@/api/client"
 export { useLiveMode, useIsWaking, useDataSourceNotice } from "@/api/liveMode"

@@ -8,6 +8,7 @@ export type Country = components["schemas"]["CountryOut"]
 export type AssessRequest = components["schemas"]["AssessRequest"]
 export type AssessResponse = components["schemas"]["AssessResponse"]
 export type Obligation = components["schemas"]["Obligation"]
+export type Rule = components["schemas"]["RuleOut"]
 export type AskRequest = components["schemas"]["AskRequest"]
 export type AskResponse = components["schemas"]["AskResponse"]
 
@@ -21,6 +22,8 @@ export type AskResponse = components["schemas"]["AskResponse"]
  */
 export interface DataSource {
   countries(): Promise<Country[]>
+  /** One country's rules with no profile applied - what the intake preview shows before the wizard is finished. */
+  rules(country: string): Promise<Rule[]>
   assess(input: AssessRequest): Promise<AssessResponse>
   ask(input: AskRequest): Promise<AskResponse>
 }
@@ -58,6 +61,10 @@ export function pingHealth(): void {
 export class HttpDataSource implements DataSource {
   countries(): Promise<Country[]> {
     return request<Country[]>("/api/countries")
+  }
+
+  rules(country: string): Promise<Rule[]> {
+    return request<Rule[]>(`/api/countries/${encodeURIComponent(country)}/rules`)
   }
 
   assess(input: AssessRequest): Promise<AssessResponse> {

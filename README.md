@@ -99,12 +99,23 @@ alembic upgrade head                 # schema + CREATE EXTENSION vector
 python scripts/ingest.py             # knowledge_base/*.md -> embedded chunks
 python scripts/seed_rules.py         # structured obligations -> rules table
 
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload        # JSON API on :8000
 ```
 
-Open <http://127.0.0.1:8000/>.
-
 `ingest.py` downloads the embedding model (~90MB) the first time it runs.
+
+Then the web client, in a second terminal:
+
+```bash
+cd frontend
+nvm use                              # Node version is pinned in .nvmrc
+npm install
+npm run dev                          # http://localhost:5173
+```
+
+The client opens in **demo mode**, reading committed fixtures, so it runs
+with the API switched off. Use the header toggle (or `?live=1`) to point it
+at the backend above.
 
 ### Environment variables
 
@@ -134,10 +145,17 @@ Both are safe to re-run; each fully replaces its own rows.
 ## Running it
 
 ```bash
-pytest                               # 39 tests, no API calls, no network
+pytest                               # 42 tests, no API calls, no network
 ruff check . && ruff format --check .
 python scripts/run_eval.py           # 58 cases against the REAL API — costs money
+
+cd frontend && npm run build         # typecheck + production build
+cd frontend && npm run lint
 ```
+
+`run_eval.py` also writes `frontend/src/data/eval-results.json`, which is
+what the `/how-it-works` page displays — so those numbers are always a real,
+dated run rather than typed-in copy.
 
 `pytest` is fully mocked and free. `run_eval.py` is not: it makes a real
 Claude call per grounded case (~$0.30 a run) and is deliberately excluded from
@@ -202,10 +220,14 @@ app/
   retrieval.py      country filter + vector search + query rewriting
   llm.py            Anthropic wrapper; logs tokens and latency on every call
   logging_setup.py  JSON stdout logging; sole owner of query_logs inserts
-  routers/          ask.py, assess.py (JSON API), pages.py (HTML)
-  templates/        Jinja2 — server-rendered, no build step
+  rate_limit.py     per-IP limits on the two endpoints that cost money
+  routers/          ask.py, assess.py, countries.py — JSON only
+frontend/           React + Vite client (see frontend/README.md)
+  src/api/          DataSource interface, HTTP + demo implementations
+  src/features/     intake wizard, assessment, Q&A
+  src/demo/         fixtures snapshotted from the real API
 knowledge_base/     BE.md, PL.md, FR.md — curated, sourced, dated
-scripts/            ingest.py, seed_rules.py, run_eval.py
+scripts/            ingest.py, seed_rules.py, run_eval.py, snapshot_fixtures.py
 tests/              pytest suite + eval_set.yaml
 alembic/            migrations
 ```
@@ -229,8 +251,12 @@ tokens, latency, which chunks grounded the answer, and whether it refused.
 - **Some sources are secondary.** Penalty and retention figures for PL/FR
   cite tax publishers where official pages weren't reachable. Flagged for
   verification before real users.
-- **No rate limiting or auth.** Every answered question costs money and
-  anyone can call it. Needed before a public deployment.
+- **No auth.** Per-IP rate limits (10/min, 100/day) now guard the two
+  endpoints that spend money, but anyone can still call them. Fine for a
+  portfolio deployment behind a spend cap; not for real users.
+- **The frontend has no automated tests.** Verified by hand and by
+  server-rendering components against real fixtures; Vitest and Playwright
+  are specified in `docs/04-FRONTEND-DESIGN.md` but not yet set up.
 - **Content goes stale.** `last_reviewed` records when a human checked;
   nothing alerts when that date gets old.
 

@@ -1,0 +1,29 @@
+[
+  {
+    "applies_from": "2026-02-01",
+    "format_required": "FA(3) structured XML",
+    "network": "KSeF",
+    "penalty_summary": "No penalties during 2026. From 1 January 2027: up to 100% of the VAT shown on an invoice issued outside KSeF, or up to 18.7% of the gross amount for an invoice showing no VAT.",
+    "rule_type": "issue (large taxpayers: 2024 turnover over PLN 200 million)",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://ksef.podatki.gov.pl/"
+  },
+  {
+    "applies_from": "2026-02-01",
+    "format_required": "FA(3) structured XML",
+    "network": "KSeF",
+    "penalty_summary": "No penalties during 2026. From 1 January 2027: up to 100% of the VAT shown on an invoice issued outside KSeF, or up to 18.7% of the gross amount for an invoice showing no VAT.",
+    "rule_type": "receive",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://ksef.podatki.gov.pl/"
+  },
+  {
+    "applies_from": "2026-04-01",
+    "format_required": "FA(3) structured XML",
+    "network": "KSeF",
+    "penalty_summary": "No penalties during 2026. From 1 January 2027: up to 100% of the VAT shown on an invoice issued outside KSeF, or up to 18.7% of the gross amount for an invoice showing no VAT.",
+    "rule_type": "issue (all other VAT taxpayers, including sole traders and SMEs)",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://ksef.podatki.gov.pl/"
+  }
+]

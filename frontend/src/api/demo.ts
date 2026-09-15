@@ -5,6 +5,7 @@ import type {
   AssessResponse,
   Country,
   DataSource,
+  Rule,
 } from "@/api/client"
 import countriesFixture from "@/demo/fixtures/countries.json"
 
@@ -28,6 +29,14 @@ const assessFixtures = Object.values(
 const askFixtures = Object.values(
   import.meta.glob<{ default: AskFixture }>("../demo/fixtures/ask/*.json", { eager: true })
 ).map((module) => module.default)
+
+// Keyed by country code, taken from the filename (rules/BE.json), since
+// rules are looked up by country rather than matched against a request.
+const ruleFixtures: Record<string, Rule[]> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<{ default: Rule[] }>("../demo/fixtures/rules/*.json", { eager: true })
+  ).map(([path, module]) => [path.split("/").pop()!.replace(".json", ""), module.default])
+)
 
 const DEMO_DELAY_MS: [number, number] = [400, 700]
 
@@ -63,6 +72,14 @@ export class DemoDataSource implements DataSource {
   async countries(): Promise<Country[]> {
     await delay()
     return countriesFixture
+  }
+
+  async rules(country: string): Promise<Rule[]> {
+    await delay()
+    // An unknown country has no rules rather than an error - the live API
+    // 404s, but in demo mode "nothing on file for that country" is the
+    // honest equivalent and the preview renders it as such.
+    return ruleFixtures[country.toUpperCase()] ?? []
   }
 
   async assess(input: AssessRequest): Promise<AssessResponse> {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { counterpartyStepSchema, type CounterpartyStepValues } from "@/features/intake/schema"
-import { COUNTERPARTIES, COUNTERPARTY_LABELS } from "@/features/intake/types"
+import { COUNTERPARTIES, COUNTERPARTY_HINTS, COUNTERPARTY_LABELS } from "@/features/intake/types"
 
 interface CounterpartyStepProps {
   defaultValues?: Partial<CounterpartyStepValues>
@@ -29,24 +29,35 @@ export function CounterpartyStep({ defaultValues, onNext, onBack }: Counterparty
   return (
     <form onSubmit={form.handleSubmit(onNext)} className="space-y-6" noValidate>
       <div>
-        <h2 className="text-xl font-medium text-foreground">Who do you invoice?</h2>
-        <p className="mt-1 text-sm text-muted-foreground">Select every kind of customer that applies.</p>
+        <h2 className="text-3xl leading-tight font-semibold text-foreground">
+          Who do you send invoices to?
+        </h2>
+        <p className="mt-2.5 max-w-[46ch] text-muted-foreground">
+          Choose everyone you bill. Most mandates apply to business customers first.
+        </p>
       </div>
 
-      <fieldset className="space-y-2">
-        <legend className="sr-only">Who do you invoice?</legend>
+      <fieldset className="grid gap-2.5">
+        <legend className="sr-only">Who do you send invoices to?</legend>
         {COUNTERPARTIES.map((counterparty) => (
           <Label
             key={counterparty}
             htmlFor={`to-${counterparty}`}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-border px-4 py-3 font-normal has-[[data-checked]]:border-primary has-[[data-checked]]:ring-1 has-[[data-checked]]:ring-primary"
+            className="flex cursor-pointer items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3.5 font-normal transition-colors hover:border-border/80 has-[[data-checked]]:border-primary has-[[data-checked]]:bg-primary/8"
           >
             <Checkbox
               id={`to-${counterparty}`}
               checked={selected.includes(counterparty)}
-              onCheckedChange={(checked) => toggle(counterparty, checked === true)}
+              onCheckedChange={(value) => toggle(counterparty, value === true)}
             />
-            {COUNTERPARTY_LABELS[counterparty]}
+            <span>
+              <span className="block font-medium text-foreground">
+                {COUNTERPARTY_LABELS[counterparty]}
+              </span>
+              <span className="block text-sm text-muted-foreground">
+                {COUNTERPARTY_HINTS[counterparty]}
+              </span>
+            </span>
           </Label>
         ))}
       </fieldset>
@@ -60,7 +71,7 @@ export function CounterpartyStep({ defaultValues, onNext, onBack }: Counterparty
         <Button type="button" variant="outline" onClick={onBack}>
           Back
         </Button>
-        <Button type="submit">Continue</Button>
+        <Button type="submit">See my obligations</Button>
       </div>
     </form>
   )

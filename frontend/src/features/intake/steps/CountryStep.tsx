@@ -44,35 +44,39 @@ export function CountryStep({ defaultValue, onNext }: CountryStepProps) {
   return (
     <form onSubmit={form.handleSubmit(onNext)} className="space-y-6" noValidate>
       <div>
-        <h2 className="text-xl font-medium text-foreground">
+        <h2 className="text-3xl leading-tight font-semibold text-foreground">
           Where is your business registered?
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Three questions. A plain-language answer, with the official source for every claim.
+        <p className="mt-2.5 max-w-[46ch] text-muted-foreground">
+          Three questions, then a plain-language answer with the official source behind every
+          claim.
         </p>
       </div>
 
       {countries === null ? (
-        <div className="space-y-2" aria-hidden="true">
-          <Skeleton w="100%" h="3.25rem" className="block" />
-          <Skeleton w="100%" h="3.25rem" className="block" />
-          <Skeleton w="100%" h="3.25rem" className="block" />
+        <div className="grid gap-2.5" aria-hidden="true">
+          <Skeleton w="100%" h="4rem" className="block" />
+          <Skeleton w="100%" h="4rem" className="block" />
+          <Skeleton w="100%" h="4rem" className="block" />
         </div>
       ) : (
         <RadioGroup
           value={selected}
           onValueChange={(value) => form.setValue("country", value, { shouldValidate: true })}
+          className="gap-2.5"
         >
           {countries.map((country) => (
             <Label
               key={country.code}
               htmlFor={`country-${country.code}`}
-              className="flex cursor-pointer items-center justify-between rounded-lg border border-border px-4 py-3 font-normal has-[[data-checked]]:border-primary has-[[data-checked]]:ring-1 has-[[data-checked]]:ring-primary"
+              className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3.5 font-normal transition-colors hover:border-border/80 has-[[data-checked]]:border-primary has-[[data-checked]]:bg-primary/8"
             >
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-3">
                 <RadioGroupItem id={`country-${country.code}`} value={country.code} />
-                {country.name}
-                <span className="text-muted-foreground">{country.code}</span>
+                <span>
+                  <span className="font-medium text-foreground">{country.name}</span>{" "}
+                  <span className="font-mono text-xs text-muted-foreground">{country.code}</span>
+                </span>
               </span>
               <CoverageIndicator status={country.status} />
             </Label>

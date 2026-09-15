@@ -1,0 +1,20 @@
+[
+  {
+    "applies_from": "2026-01-01",
+    "format_required": "Peppol BIS Billing 3.0 (EN 16931)",
+    "network": "Peppol",
+    "penalty_summary": "EUR 1,500 / 3,000 / 5,000 for a first / second / third infringement, escalating only if within three months of the previous one. No e-invoicing-specific penalties during the 1 January - 31 March 2026 tolerance period, if reasonable compliance effort can be shown.",
+    "rule_type": "issue",
+    "source_reviewed_at": "2026-09-04",
+    "source_url": "https://finance.belgium.be/en/enterprises/vat/e-invoicing/mandatory-use-structured-electronic-invoices-2026"
+  },
+  {
+    "applies_from": "2026-01-01",
+    "format_required": "Peppol BIS Billing 3.0 (EN 16931)",
+    "network": "Peppol",
+    "penalty_summary": "EUR 1,500 / 3,000 / 5,000 for a first / second / third infringement, escalating only if within three months of the previous one. No e-invoicing-specific penalties during the 1 January - 31 March 2026 tolerance period, if reasonable compliance effort can be shown.",
+    "rule_type": "receive",
+    "source_reviewed_at": "2026-09-04",
+    "source_url": "https://finance.belgium.be/en/enterprises/vat/e-invoicing/mandatory-use-structured-electronic-invoices-2026"
+  }
+]

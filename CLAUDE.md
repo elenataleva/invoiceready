@@ -1,20 +1,37 @@
 # InvoiceReady
 
 EU e-invoicing compliance assistant for small businesses.
-Full specs: `docs/01-BUSINESS-PLAN.md`, `docs/02-TECHNICAL-DESIGN.md`.
+Full specs: `docs/01-BUSINESS-PLAN.md`, `docs/02-TECHNICAL-DESIGN.md`,
+`docs/04-FRONTEND-DESIGN.md` (supersedes `02` on frontend and hosting).
 
 ## Stack
-Python 3.11, FastAPI, PostgreSQL + pgvector, SQLAlchemy, Alembic,
-Anthropic API (Claude), pytest, ruff, Jinja2 templates.
+**Backend** (JSON API only): Python 3.11, FastAPI, PostgreSQL + pgvector,
+SQLAlchemy, Alembic, Anthropic API (Claude), pytest, ruff.
+**Frontend** (`frontend/`): React 19 + TypeScript, Vite, Tailwind v4,
+shadcn/ui, React Router, react-hook-form + zod, oxlint. Node per `.nvmrc`.
+
+The server-rendered Jinja UI was removed per `04` #7.1 - the backend
+serves JSON only, and `frontend/` is the single front end.
 
 ## Commands
+Backend (repo root):
 - Install: `pip install -e ".[dev]"`
 - Run: `uvicorn app.main:app --reload`
 - Test: `pytest`
 - Lint: `ruff check . && ruff format --check .`
 - Migrate: `alembic upgrade head`
-- Ingest KB: `python scripts/ingest.py`
-- Eval: `python scripts/run_eval.py`
+- Ingest KB: `python scripts/ingest.py` (fills `rule_chunks`, for `/api/ask`)
+- Seed rules: `python scripts/seed_rules.py` (fills `rules`, for `/api/assess`
+  and `/api/countries/{code}/rules` - both ingest steps are required)
+- Eval: `python scripts/run_eval.py` (real API calls, costs money)
+- Demo fixtures: `python scripts/snapshot_fixtures.py` (also costs money)
+
+Frontend (`cd frontend`, `nvm use` first):
+- Install: `npm install`
+- Run: `npm run dev`
+- Build + typecheck: `npm run build`
+- Lint: `npm run lint`
+- Regenerate API types: `npm run gen:api` (needs the backend running)
 
 ## Non-negotiable rules
 - Deadlines, thresholds, and formats come from the `rules` table via

@@ -33,16 +33,22 @@ export function Wizard({ state, onChange, onComplete }: WizardProps) {
   const [step, setStep] = useState(() => firstIncompleteStep(state))
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-        <span className="tabular-nums" aria-live="polite">
-          STEP {step + 1} / {STEP_COUNT}
+    <div className="space-y-7">
+      <div className="flex items-center gap-3">
+        <span
+          className="text-xs font-semibold tracking-[0.08em] whitespace-nowrap text-muted-foreground uppercase tabular-nums"
+          aria-live="polite"
+        >
+          Step {step + 1} of {STEP_COUNT}
         </span>
-        <div className="flex flex-1 gap-1" aria-hidden="true">
+        <div className="flex flex-1 gap-1.5" aria-hidden="true">
           {Array.from({ length: STEP_COUNT }, (_, index) => (
             <div
               key={index}
-              className={cn("h-1 flex-1 rounded-full", index <= step ? "bg-primary" : "bg-muted")}
+              className={cn(
+                "h-[3px] flex-1 rounded-full transition-colors",
+                index <= step ? "bg-primary" : "bg-border"
+              )}
             />
           ))}
         </div>

@@ -1,18 +1,16 @@
 import time
 from collections.abc import Awaitable, Callable
-from pathlib import Path
 
 import structlog
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
 from app.config import Settings
 from app.logging_setup import configure_logging
 from app.rate_limit import limiter
-from app.routers import ask, assess, countries, pages
+from app.routers import ask, assess, countries
 
 # Called before anything else logs, so no line escapes in the default
 # console format.
@@ -34,13 +32,14 @@ app.add_middleware(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# JSON only, per docs/04-FRONTEND-DESIGN.md #7.1 - the server-rendered
+# Jinja UI this app started with (and its /static mount) was replaced by
+# the React client in frontend/, and serving both meant two competing
+# front ends on one origin and two page routes in the OpenAPI schema the
+# client generates its types from.
 app.include_router(ask.router)
 app.include_router(assess.router)
 app.include_router(countries.router)
-app.include_router(pages.router)
-
-STATIC_DIR = Path(__file__).resolve().parent / "static"
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 @app.middleware("http")
@@ -51,8 +50,8 @@ async def log_requests(
 
     Deliberately separate from the per-call logging in app/llm.py: this
     records that a request happened and how long it took end to end,
-    including requests that never reach the LLM at all (refusals, cache
-    hits, static files).
+    including requests that never reach the LLM at all (refusals and
+    cache hits).
     """
     start = time.monotonic()
     response = await call_next(request)

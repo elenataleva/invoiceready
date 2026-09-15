@@ -20,16 +20,24 @@ export interface IntakeState {
 }
 
 export const EMPLOYEE_BAND_LABELS: Record<EmployeeBand, string> = {
-  "1-9": "1 - 9 employees",
-  "10-49": "10 - 49 employees",
-  "50-249": "50 - 249 employees",
-  "250+": "250+ employees",
+  "1-9": "1 to 9 people",
+  "10-49": "10 to 49 people",
+  "50-249": "50 to 249 people",
+  "250+": "250 or more",
+}
+
+/** The recognisable name for each band, so nobody has to work out which one they are. */
+export const EMPLOYEE_BAND_HINTS: Record<EmployeeBand, string> = {
+  "1-9": "Micro-business or sole trader",
+  "10-49": "Small business",
+  "50-249": "Medium-sized business",
+  "250+": "Large enterprise",
 }
 
 export const TURNOVER_BAND_LABELS: Record<TurnoverBand, string> = {
   under_10k: "Under EUR 10,000",
-  "10k_100k": "EUR 10,000 - 100,000",
-  "100k_500k": "EUR 100,000 - 500,000",
+  "10k_100k": "EUR 10,000 to 100,000",
+  "100k_500k": "EUR 100,000 to 500,000",
   over_500k: "Over EUR 500,000",
 }
 
@@ -56,9 +64,16 @@ export const TURNOVER_BAND_VALUES: Record<TurnoverBand, number> = {
 }
 
 export const COUNTERPARTY_LABELS: Record<Counterparty, string> = {
-  B2B: "Other businesses (B2B)",
-  B2C: "Consumers (B2C)",
-  B2G: "Government bodies (B2G)",
+  B2B: "Other businesses",
+  B2C: "Members of the public",
+  B2G: "Government bodies",
+}
+
+/** Why each answer matters, in place of the bare B2B/B2C/B2G abbreviations. */
+export const COUNTERPARTY_HINTS: Record<Counterparty, string> = {
+  B2B: "B2B - the invoices these rules are mainly about",
+  B2C: "B2C - usually outside the mandate",
+  B2G: "B2G - often required already",
 }
 
 export type CompleteIntakeState = Required<IntakeState>

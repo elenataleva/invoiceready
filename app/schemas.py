@@ -23,6 +23,24 @@ class CountryOut(BaseModel):
     last_reviewed: date
 
 
+class RuleOut(BaseModel):
+    """One `rules` row, verbatim, with no profile applied and no LLM involved.
+
+    This is what a country looks like *before* anyone describes their
+    business - the intake preview (docs/04-FRONTEND-DESIGN.md #3.2) shows
+    it the moment a country is picked, which is why it must stay free to
+    serve: no generation, no per-request cost.
+    """
+
+    rule_type: str
+    applies_from: date
+    format_required: str | None
+    network: str | None
+    penalty_summary: str | None
+    source_url: str
+    source_reviewed_at: date
+
+
 class AssessRequest(BaseModel):
     country: str
     vat_registered: bool

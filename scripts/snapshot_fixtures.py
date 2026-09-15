@@ -73,7 +73,7 @@ ASK_CASES: dict[str, dict] = {
 }
 
 
-def _write(path: Path, payload: dict) -> None:
+def _write(path: Path, payload: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
@@ -85,6 +85,15 @@ def snapshot() -> None:
     countries.raise_for_status()
     _write(FRONTEND_FIXTURES_DIR / "countries.json", countries.json())
     print(f"countries.json - {len(countries.json())} countries")
+
+    # Per-country rules, for the intake preview. Free to snapshot and free
+    # to serve - no LLM anywhere on this path.
+    for country in countries.json():
+        code = country["code"]
+        rules = client.get(f"/api/countries/{code}/rules")
+        rules.raise_for_status()
+        _write(FRONTEND_FIXTURES_DIR / "rules" / f"{code}.json", rules.json())
+        print(f"rules/{code}.json - {len(rules.json())} rules")
 
     for name, request_body in ASSESS_CASES.items():
         response = client.post("/api/assess", json=request_body)

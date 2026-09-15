@@ -1,9 +1,15 @@
 import { cn } from "@/lib/utils"
 
-const DEFAULT_DISCLAIMER = "Informational guidance only, not tax or legal advice."
+// The API's own disclaimer (app/routers/assess.py) plus the advisor
+// clause. The clause isn't decoration: it was what the removed Jinja
+// footer showed, and 01-BUSINESS-PLAN.md #5 asks for a prominent
+// disclaimer on every page - dropping the server-rendered UI shouldn't
+// quietly weaken what a visitor is told.
+const DEFAULT_DISCLAIMER =
+  "Informational guidance only, not tax or legal advice. Verify with a qualified advisor before acting."
 
 interface DisclaimerBarProps {
-  /** Defaults to the backend's own disclaimer string (app/routers/assess.py) so the two never drift. */
+  /** Override only where the API returned its own wording; otherwise the constant above. */
   text?: string
   className?: string
 }

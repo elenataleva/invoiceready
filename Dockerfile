@@ -20,9 +20,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 # Installed editable, matching CLAUDE.md's documented local install, so the
-# container imports the same source tree it runs from. That matters because
-# app/templates/ and app/static/ are not Python packages and would not be
-# picked up by a normal (non-editable) install.
+# container imports the same source tree it runs from. (This mattered more
+# when app/templates/ and app/static/ shipped non-package assets; since
+# docs/04-FRONTEND-DESIGN.md #7.1 made this a JSON-only API those are gone,
+# but editable still keeps container and local behaviour identical.)
 #
 # Tradeoff: app/ is copied before the install, so editing application code
 # invalidates the dependency layer and reinstalls. Acceptable at this size;

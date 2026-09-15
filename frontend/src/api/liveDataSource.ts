@@ -60,6 +60,7 @@ export function createLiveDataSource(live: DataSource, demo: DataSource): DataSo
 
   return {
     countries: () => run(true, () => live.countries(), () => demo.countries()),
+    rules: (country: string) => run(true, () => live.rules(country), () => demo.rules(country)),
     assess: (input: AssessRequest) => run(true, () => live.assess(input), () => demo.assess(input)),
     // Not wake-flagged: by the time someone is typing a follow-up
     // question, an earlier countries()/assess() call has almost always

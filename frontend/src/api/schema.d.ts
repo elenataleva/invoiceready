@@ -59,34 +59,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/": {
+    "/api/countries/{code}/rules": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Intake */
-        get: operations["intake__get"];
+        /**
+         * Country Rules
+         * @description Every rule for one country, unfiltered by any business profile.
+         *
+         *     Deliberately not rate-limited alongside /api/ask and /api/assess: this
+         *     is a plain SELECT with no LLM call behind it, so it costs nothing to
+         *     serve and the intake preview can fire it on every country click.
+         */
+        get: operations["country_rules_api_countries__code__rules_get"];
         put?: never;
         post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/assess": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Submit Intake */
-        post: operations["submit_intake_assess_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -154,25 +144,6 @@ export interface components {
             /** Disclaimer */
             disclaimer: string;
         };
-        /** Body_submit_intake_assess_post */
-        Body_submit_intake_assess_post: {
-            /** Country */
-            country: string;
-            /** Vat Registered */
-            vat_registered: boolean;
-            /** Employee Count */
-            employee_count: number;
-            /**
-             * Annual Turnover Eur
-             * @default
-             */
-            annual_turnover_eur: string;
-            /**
-             * Invoices To
-             * @default []
-             */
-            invoices_to: string[];
-        };
         /**
          * CountryOut
          * @description What a frontend needs to render country choices without hardcoding coverage.
@@ -216,6 +187,37 @@ export interface components {
             network: string | null;
             /** Explanation */
             explanation: string;
+            /** Source Url */
+            source_url: string;
+            /**
+             * Source Reviewed At
+             * Format: date
+             */
+            source_reviewed_at: string;
+        };
+        /**
+         * RuleOut
+         * @description One `rules` row, verbatim, with no profile applied and no LLM involved.
+         *
+         *     This is what a country looks like *before* anyone describes their
+         *     business - the intake preview (docs/04-FRONTEND-DESIGN.md #3.2) shows
+         *     it the moment a country is picked, which is why it must stay free to
+         *     serve: no generation, no per-request cost.
+         */
+        RuleOut: {
+            /** Rule Type */
+            rule_type: string;
+            /**
+             * Applies From
+             * Format: date
+             */
+            applies_from: string;
+            /** Format Required */
+            format_required: string | null;
+            /** Network */
+            network: string | null;
+            /** Penalty Summary */
+            penalty_summary: string | null;
             /** Source Url */
             source_url: string;
             /**
@@ -332,11 +334,13 @@ export interface operations {
             };
         };
     };
-    intake__get: {
+    country_rules_api_countries__code__rules_get: {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                code: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -347,31 +351,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "text/html": string;
-                };
-            };
-        };
-    };
-    submit_intake_assess_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/x-www-form-urlencoded": components["schemas"]["Body_submit_intake_assess_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
+                    "application/json": components["schemas"]["RuleOut"][];
                 };
             };
             /** @description Validation Error */

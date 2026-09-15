@@ -1,0 +1,29 @@
+[
+  {
+    "applies_from": "2026-09-01",
+    "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+    "network": "Plateforme agreee (PA, formerly PDP)",
+    "penalty_summary": "EUR 50 per invoice not issued electronically and EUR 500 per e-reporting breach, each capped at EUR 15,000 per calendar year (loi de finances 2026).",
+    "rule_type": "issue (large enterprises and ETI)",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+  },
+  {
+    "applies_from": "2026-09-01",
+    "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+    "network": "Plateforme agreee (PA, formerly PDP)",
+    "penalty_summary": "EUR 50 per invoice not issued electronically and EUR 500 per e-reporting breach, each capped at EUR 15,000 per calendar year (loi de finances 2026).",
+    "rule_type": "receive",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+  },
+  {
+    "applies_from": "2027-09-01",
+    "format_required": "Factur-X, UBL 2.1 or CII (EN 16931)",
+    "network": "Plateforme agreee (PA, formerly PDP)",
+    "penalty_summary": "EUR 50 per invoice not issued electronically and EUR 500 per e-reporting breach, each capped at EUR 15,000 per calendar year (loi de finances 2026).",
+    "rule_type": "issue (SMEs and micro-enterprises)",
+    "source_reviewed_at": "2026-09-11",
+    "source_url": "https://entreprendre.service-public.gouv.fr/vosdroits/F23208"
+  }
+]

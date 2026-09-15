@@ -24,8 +24,7 @@ export function HowItWorks() {
         <div>
           <h1 className="text-3xl font-medium tracking-tight text-foreground">How this works</h1>
           <p className="mt-2 max-w-[68ch] leading-relaxed text-muted-foreground">
-            The architecture and trade-offs behind InvoiceReady, for anyone deciding whether to
-            trust it - or hire whoever built it.
+            The architecture and trade-offs behind InvoiceReady.
           </p>
         </div>
 
@@ -148,7 +147,6 @@ export function HowItWorks() {
               GitHub repository →
             </a>
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">Demo video: not recorded yet.</p>
         </section>
       </main>
     </Layout>

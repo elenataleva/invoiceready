@@ -17,9 +17,12 @@
     // result link directly - or refreshing on one - 404s, which is the
     // classic way a client-side-routed app breaks only in production.
     //
-    // This is the Workers-native equivalent of the public/_redirects rule
-    // (`/* /index.html 200`) that Pages would have used; that file is kept
-    // for portability if this ever moves back to Pages or to Netlify.
+    // This replaces the `/* /index.html 200` rule a Pages (or Netlify)
+    // deploy would put in public/_redirects. Do not keep both: Workers
+    // validates _redirects and rejects that rule as an infinite loop
+    // (error 100324), which fails the deploy after the assets have already
+    // uploaded. Moving to a host that wants _redirects means adding that
+    // file back and dropping this key.
     "not_found_handling": "single-page-application"
   }
 }

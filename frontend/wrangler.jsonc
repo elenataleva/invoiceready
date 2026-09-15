@@ -1,0 +1,25 @@
+{
+  // Cloudflare Workers static-assets config (the successor to Pages, which
+  // is what the dashboard now creates by default). `npx wrangler deploy`
+  // reads this; without it the deploy has no idea what to upload.
+  //
+  // There is no Worker script here on purpose - this is a pure static
+  // bundle. docs/04-FRONTEND-DESIGN.md #8.1 picked Cloudflare for exactly
+  // that: a static build with no SSR runtime to host.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "invoiceready",
+  "compatibility_date": "2026-09-15",
+  "assets": {
+    "directory": "./dist",
+
+    // React Router resolves /result and /how-it-works in the browser, so
+    // nothing exists at those paths on disk. Without this, opening a shared
+    // result link directly - or refreshing on one - 404s, which is the
+    // classic way a client-side-routed app breaks only in production.
+    //
+    // This is the Workers-native equivalent of the public/_redirects rule
+    // (`/* /index.html 200`) that Pages would have used; that file is kept
+    // for portability if this ever moves back to Pages or to Netlify.
+    "not_found_handling": "single-page-application"
+  }
+}

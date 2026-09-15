@@ -74,4 +74,16 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
 # Migrations run on every start, so a deploy can never serve against an
 # out-of-date schema (#9 item 4). PORT is injected by most PaaS hosts;
 # exec hands PID 1 to uvicorn so it receives SIGTERM and shuts down cleanly.
-CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+#
+# --proxy-headers is not cosmetic: behind a PaaS load balancer every request
+# arrives from the proxy, so request.client.host is the proxy rather than the
+# caller. slowapi keys its per-IP limits off that value, which made the rate
+# limiting in app/rate_limit.py silently ineffective in production - verified
+# against the deployed service, where 22 consecutive requests were served
+# without a single 429. That is the guard protecting the Anthropic budget
+# (docs/04-FRONTEND-DESIGN.md #7.4), so it failing open is expensive.
+#
+# --forwarded-allow-ips="*" trusts X-Forwarded-For from any peer, which is
+# safe only because the container is reachable exclusively through the
+# platform's proxy. Anything that exposes this port directly must narrow it.
+CMD ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --proxy-headers --forwarded-allow-ips='*'"]

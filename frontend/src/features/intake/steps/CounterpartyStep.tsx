@@ -9,11 +9,18 @@ import { COUNTERPARTIES, COUNTERPARTY_HINTS, COUNTERPARTY_LABELS } from "@/featu
 
 interface CounterpartyStepProps {
   defaultValues?: Partial<CounterpartyStepValues>
+  /** Fires per answer, not on submit - see CountryStep's note. */
+  onSelect: (values: Partial<CounterpartyStepValues>) => void
   onNext: (values: CounterpartyStepValues) => void
   onBack: () => void
 }
 
-export function CounterpartyStep({ defaultValues, onNext, onBack }: CounterpartyStepProps) {
+export function CounterpartyStep({
+  defaultValues,
+  onSelect,
+  onNext,
+  onBack,
+}: CounterpartyStepProps) {
   const form = useForm<CounterpartyStepValues>({
     resolver: zodResolver(counterpartyStepSchema),
     defaultValues: { invoicesTo: defaultValues?.invoicesTo ?? [] },
@@ -24,6 +31,7 @@ export function CounterpartyStep({ defaultValues, onNext, onBack }: Counterparty
   function toggle(value: (typeof COUNTERPARTIES)[number], checked: boolean) {
     const next = checked ? [...selected, value] : selected.filter((item) => item !== value)
     form.setValue("invoicesTo", next, { shouldValidate: true })
+    onSelect({ invoicesTo: next })
   }
 
   return (

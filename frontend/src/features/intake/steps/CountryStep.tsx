@@ -12,10 +12,12 @@ import { countryStepSchema, type CountryStepValues } from "@/features/intake/sch
 
 interface CountryStepProps {
   defaultValue?: string
+  /** Fires on selection, not on submit - the preview panel reads shared intake state and must react to the click (#3.2/#5.1). */
+  onSelect: (values: Partial<CountryStepValues>) => void
   onNext: (values: CountryStepValues) => void
 }
 
-export function CountryStep({ defaultValue, onNext }: CountryStepProps) {
+export function CountryStep({ defaultValue, onSelect, onNext }: CountryStepProps) {
   const ds = useDataSource()
   const [countries, setCountries] = useState<Country[] | null>(null)
 
@@ -62,7 +64,10 @@ export function CountryStep({ defaultValue, onNext }: CountryStepProps) {
       ) : (
         <RadioGroup
           value={selected}
-          onValueChange={(value) => form.setValue("country", value, { shouldValidate: true })}
+          onValueChange={(value) => {
+            form.setValue("country", value, { shouldValidate: true })
+            onSelect({ country: value })
+          }}
           className="gap-2.5"
         >
           {countries.map((country) => (

@@ -1,5 +1,7 @@
 # InvoiceReady
 
+[![CI](https://github.com/elenataleva/invoiceready/actions/workflows/ci.yml/badge.svg)](https://github.com/elenataleva/invoiceready/actions/workflows/ci.yml)
+
 EU e-invoicing compliance assistant for small businesses. You describe your
 business in a short form; it tells you **which e-invoicing obligations apply
 to you, from what date, in what format** — and lets you ask follow-up
@@ -151,6 +153,7 @@ python scripts/run_eval.py           # 58 cases against the REAL API — costs m
 
 cd frontend && npm run build         # typecheck + production build
 cd frontend && npm run lint
+cd frontend && npm test              # 39 tests, fixtures only, no network
 ```
 
 `run_eval.py` also writes `frontend/src/data/eval-results.json`, which is
@@ -254,9 +257,11 @@ tokens, latency, which chunks grounded the answer, and whether it refused.
 - **No auth.** Per-IP rate limits (10/min, 100/day) now guard the two
   endpoints that spend money, but anyone can still call them. Fine for a
   portfolio deployment behind a spend cap; not for real users.
-- **The frontend has no automated tests.** Verified by hand and by
-  server-rendering components against real fixtures; Vitest and Playwright
-  are specified in `docs/04-FRONTEND-DESIGN.md` but not yet set up.
+- **No browser-level frontend tests.** Vitest and React Testing Library
+  cover the component and flow logic against real fixtures, including the
+  refusal state; the Playwright pass specified in
+  `docs/04-FRONTEND-DESIGN.md` — real layout, real focus behaviour — isn't
+  set up yet.
 - **Content goes stale.** `last_reviewed` records when a human checked;
   nothing alerts when that date gets old.
 

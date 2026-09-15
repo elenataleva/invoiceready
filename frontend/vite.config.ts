@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -14,5 +15,14 @@ export default defineConfig({
     alias: {
       "@": path.resolve(dirname, "./src"),
     },
+  },
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./tests/setup.ts"],
+    include: ["tests/**/*.test.{ts,tsx}"],
+    // Demo mode by default, matching src/api/liveMode.ts's own escape
+    // hatch: no test should be able to reach a real backend because a
+    // stray localStorage flag survived from somewhere else.
+    env: { VITE_DEMO_MODE: "true" },
   },
 })

@@ -57,6 +57,7 @@ export function Wizard({ state, onChange, onComplete }: WizardProps) {
       {step === 0 && (
         <CountryStep
           defaultValue={state.country}
+          onSelect={onChange}
           onNext={(values) => {
             onChange(values)
             setStep(1)
@@ -72,6 +73,7 @@ export function Wizard({ state, onChange, onComplete }: WizardProps) {
             employeeBand: state.employeeBand,
             turnoverBand: state.turnoverBand,
           }}
+          onSelect={onChange}
           onNext={(values) => {
             onChange({ ...values, vatRegistered: values.vatRegistered === "yes" })
             setStep(2)
@@ -83,6 +85,7 @@ export function Wizard({ state, onChange, onComplete }: WizardProps) {
       {step === 2 && (
         <CounterpartyStep
           defaultValues={{ invoicesTo: state.invoicesTo }}
+          onSelect={onChange}
           onNext={(values) => {
             const next = { ...state, ...values }
             onChange(values)

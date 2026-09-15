@@ -31,7 +31,11 @@ Frontend (`cd frontend`, `nvm use` first):
 - Run: `npm run dev`
 - Build + typecheck: `npm run build`
 - Lint: `npm run lint`
+- Test: `npm test`
 - Regenerate API types: `npm run gen:api` (needs the backend running)
+
+CI (`.github/workflows/ci.yml`) runs all of the above except the eval, and
+fails if `src/api/schema.d.ts` drifts from the backend's Pydantic models.
 
 ## Non-negotiable rules
 - Deadlines, thresholds, and formats come from the `rules` table via

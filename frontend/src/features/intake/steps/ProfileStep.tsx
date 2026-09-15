@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { profileStepSchema, type ProfileStepValues } from "@/features/intake/schema"
+import type { IntakeState } from "@/features/intake/types"
 import {
   EMPLOYEE_BAND_HINTS,
   EMPLOYEE_BAND_LABELS,
@@ -16,6 +17,8 @@ import { cn } from "@/lib/utils"
 
 interface ProfileStepProps {
   defaultValues?: Partial<ProfileStepValues>
+  /** Fires per answer, not on submit - see CountryStep's note. */
+  onSelect: (values: Partial<IntakeState>) => void
   onNext: (values: ProfileStepValues) => void
   onBack: () => void
 }
@@ -23,7 +26,7 @@ interface ProfileStepProps {
 const OPTION =
   "flex cursor-pointer items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 font-normal transition-colors hover:border-border/80 has-[[data-checked]]:border-primary has-[[data-checked]]:bg-primary/8"
 
-export function ProfileStep({ defaultValues, onNext, onBack }: ProfileStepProps) {
+export function ProfileStep({ defaultValues, onSelect, onNext, onBack }: ProfileStepProps) {
   const form = useForm<ProfileStepValues>({
     resolver: zodResolver(profileStepSchema),
     defaultValues,
@@ -46,9 +49,10 @@ export function ProfileStep({ defaultValues, onNext, onBack }: ProfileStepProps)
         </legend>
         <RadioGroup
           value={form.watch("vatRegistered")}
-          onValueChange={(value) =>
+          onValueChange={(value) => {
             form.setValue("vatRegistered", value as "yes" | "no", { shouldValidate: true })
-          }
+            onSelect({ vatRegistered: value === "yes" })
+          }}
           className="flex gap-2.5"
         >
           {(["yes", "no"] as const).map((value) => (
@@ -71,11 +75,11 @@ export function ProfileStep({ defaultValues, onNext, onBack }: ProfileStepProps)
         </legend>
         <RadioGroup
           value={form.watch("employeeBand")}
-          onValueChange={(value) =>
-            form.setValue("employeeBand", value as ProfileStepValues["employeeBand"], {
-              shouldValidate: true,
-            })
-          }
+          onValueChange={(value) => {
+            const band = value as ProfileStepValues["employeeBand"]
+            form.setValue("employeeBand", band, { shouldValidate: true })
+            onSelect({ employeeBand: band })
+          }}
         >
           {EMPLOYEE_BANDS.map((band) => (
             <Label key={band} htmlFor={`emp-${band}`} className={OPTION}>
@@ -104,11 +108,11 @@ export function ProfileStep({ defaultValues, onNext, onBack }: ProfileStepProps)
         </legend>
         <RadioGroup
           value={form.watch("turnoverBand")}
-          onValueChange={(value) =>
-            form.setValue("turnoverBand", value as ProfileStepValues["turnoverBand"], {
-              shouldValidate: true,
-            })
-          }
+          onValueChange={(value) => {
+            const band = value as ProfileStepValues["turnoverBand"]
+            form.setValue("turnoverBand", band, { shouldValidate: true })
+            onSelect({ turnoverBand: band })
+          }}
         >
           {TURNOVER_BANDS.map((band) => (
             <Label key={band} htmlFor={`turnover-${band}`} className={OPTION}>

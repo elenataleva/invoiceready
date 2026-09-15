@@ -1,0 +1,10 @@
+# Cloudflare Pages (and Netlify) SPA fallback.
+#
+# React Router resolves /result and /how-it-works in the browser, so the
+# host never has files at those paths. Without this, opening a shared
+# result link directly - or refreshing on one - returns 404, which is the
+# common way a client-side-routed deploy breaks only in production.
+#
+# 200, not 301: the URL must stay as the visitor typed it so the router can
+# read it (and /result reads its whole profile from the query string).
+/*    /index.html   200

@@ -7,15 +7,17 @@
 FROM python:3.11-slim
 
 # PYTHONDONTWRITEBYTECODE - no .pyc files baked into the image.
-# PYTHONUNBUFFERED     - structlog output reaches stdout immediately, rather
-#                        than being lost in a buffer if the container is killed.
-# HF_HOME              - where sentence-transformers caches its model. Pinned
-#                        explicitly so the model baked in below (as root) is
-#                        found at runtime by the non-root user.
+# PYTHONUNBUFFERED      - structlog output reaches stdout immediately, rather
+#                         than being lost in a buffer if the container is killed.
+# FASTEMBED_CACHE_PATH  - where fastembed keeps the ONNX model. Pinned because
+#                         its default is a directory under $TMPDIR, which a
+#                         container wipes on restart - every cold start would
+#                         re-download 87MB. Explicit here so the model baked
+#                         in below (as root) is found at runtime by appuser.
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    HF_HOME=/opt/huggingface
+    FASTEMBED_CACHE_PATH=/opt/fastembed
 
 WORKDIR /app
 
@@ -32,25 +34,22 @@ WORKDIR /app
 COPY pyproject.toml ./
 COPY app ./app
 
-# CPU-only torch, installed first so the resolver treats it as satisfied when
-# sentence-transformers asks for torch below. Not a new dependency - torch is
-# already pulled in transitively; this only selects the build. The default
-# PyPI wheel drags in ~4GB of CUDA and Triton libraries for a GPU this will
-# never have, which is the difference between a deployable image and one that
-# times out pushing to a small host.
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
-
+# No torch: embeddings run on ONNX via fastembed (docs/04-FRONTEND-DESIGN.md
+# #8.4). The previous image installed a CPU-only torch build to dodge ~4GB of
+# CUDA wheels, but even then the running app needed 463MB resident against
+# Render's 512MB free tier. ONNX runs the identical model weights for a
+# fraction of that.
 RUN pip install --no-cache-dir -e .
 
-# Bake the embedding model into the image. app/embeddings.py constructs the
-# SentenceTransformer at import time, so without this every cold start
-# downloads ~90MB from HuggingFace - slow on each deploy, and a hard failure
-# on a host with no outbound internet access.
-RUN python -c "from sentence_transformers import SentenceTransformer; \
-    SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')"
+# Bake the ONNX model into the image. app/embeddings.py constructs
+# TextEmbedding at import time, so without this every cold start downloads
+# 87MB - slow on each deploy, and a hard failure on a host with no outbound
+# internet access.
+RUN python -c "from fastembed import TextEmbedding; \
+    TextEmbedding(model_name='sentence-transformers/all-MiniLM-L6-v2')"
 
-# The model is now on disk, so refuse to reach for the network at runtime.
-# A wrong cache path fails loudly at startup instead of silently re-downloading.
+# The model is on disk, so don't reach for the network at runtime. A wrong
+# cache path then fails loudly at startup instead of silently re-downloading.
 ENV HF_HUB_OFFLINE=1
 
 COPY alembic.ini ./
@@ -58,10 +57,10 @@ COPY alembic ./alembic
 COPY knowledge_base ./knowledge_base
 COPY scripts ./scripts
 
-# Non-root user, per 02-TECHNICAL-DESIGN.md #9. The HuggingFace cache is
-# chowned too: sentence-transformers writes lock files beside the model.
+# Non-root user, per 02-TECHNICAL-DESIGN.md #9. The model cache is chowned
+# too: fastembed writes lock files beside the model.
 RUN useradd --create-home --uid 1000 appuser \
-    && chown -R appuser:appuser /app /opt/huggingface
+    && chown -R appuser:appuser /app /opt/fastembed
 USER appuser
 
 EXPOSE 8000

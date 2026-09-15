@@ -104,7 +104,7 @@ python scripts/seed_rules.py         # structured obligations -> rules table
 uvicorn app.main:app --reload        # JSON API on :8000
 ```
 
-`ingest.py` downloads the embedding model (~90MB) the first time it runs.
+`ingest.py` downloads the ONNX embedding model (~87MB) the first time it runs.
 
 Then the web client, in a second terminal:
 

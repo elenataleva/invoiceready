@@ -14,8 +14,9 @@ env:
   # Python 3.11 to match the Dockerfile's base image - CI should fail on the
   # version that actually ships, not a newer one that happens to be local.
   PYTHON_VERSION: "3.11"
-  # Pinned so the embedding-model cache key below is stable.
-  HF_HOME: /home/runner/.cache/huggingface
+  # Pinned so the embedding-model cache below is stable. fastembed's own
+  # default is a $TMPDIR path, which defeats caching between runs.
+  FASTEMBED_CACHE_PATH: /home/runner/.cache/fastembed
 
 jobs:
   backend:
@@ -59,8 +60,8 @@ jobs:
       - name: Cache the embedding model
         uses: actions/cache@v4
         with:
-          path: ${{ env.HF_HOME }}
-          key: hf-all-MiniLM-L6-v2-${{ hashFiles('app/embeddings.py') }}
+          path: ${{ env.FASTEMBED_CACHE_PATH }}
+          key: fastembed-onnx-${{ hashFiles('app/embeddings.py') }}
 
       - run: pip install -e ".[dev]"
 
@@ -140,8 +141,8 @@ jobs:
       - name: Cache the embedding model
         uses: actions/cache@v4
         with:
-          path: ${{ env.HF_HOME }}
-          key: hf-all-MiniLM-L6-v2-${{ hashFiles('app/embeddings.py') }}
+          path: ${{ env.FASTEMBED_CACHE_PATH }}
+          key: fastembed-onnx-${{ hashFiles('app/embeddings.py') }}
 
       - run: pip install -e ".[dev]"
       - run: npm ci

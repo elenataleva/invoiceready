@@ -217,3 +217,11 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 .neon
+
+# Walkthrough notes written for my own reading, deliberately local-only.
+docs/05-BACKEND-EXPLAINED.md
+docs/06-FRONTEND-EXPLAINED.md
+docs/07-OPS-EXPLAINED.md
+
+# Cloudflare Workers build output
+frontend/.wrangler/

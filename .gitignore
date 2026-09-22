@@ -222,6 +222,7 @@ __marimo__/
 docs/05-BACKEND-EXPLAINED.md
 docs/06-FRONTEND-EXPLAINED.md
 docs/07-OPS-EXPLAINED.md
+docs/08-MCP-EXPLAINED.md
 
 # Cloudflare Workers build output
 frontend/.wrangler/

@@ -11,7 +11,10 @@ says so instead of guessing
 
 Covers **Belgium, Poland and France**.
 
-**Live URL:** not yet deployed.
+**Live:** JSON API at `https://invoiceready-api.onrender.com` ·
+MCP server at `https://invoiceready-mcp.onrender.com/mcp`.
+Both are Render free tier, so the first request after ~15 minutes idle pays
+a cold start of roughly a minute.
 
 Docs: [Business plan](docs/01-BUSINESS-PLAN.md) ·
 [Technical design](docs/02-TECHNICAL-DESIGN.md) ·
@@ -350,6 +353,17 @@ The deployed service is defined in `render.yaml` and runs the same image as
 the API with the command overridden. It needs `ANTHROPIC_API_KEY` set to any
 non-empty value despite never calling Claude, because `app/config.py` declares
 the key mandatory and the MCP server imports `app.db`.
+
+It is live at `https://invoiceready-mcp.onrender.com/mcp`, and any MCP client
+can point at that URL instead of running the server locally:
+
+```bash
+claude mcp add --transport http invoiceready-remote \
+  https://invoiceready-mcp.onrender.com/mcp
+```
+
+A bare `GET` of that URL returns 400, which is correct — it expects an MCP
+client, not a browser.
 
 ---
 

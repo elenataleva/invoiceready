@@ -240,7 +240,8 @@ connects fine and reports covering no countries.
 
 On Windows the interpreter path is `.venv\Scripts\python.exe`.
 
-A working connection lists two tools and one resource per country file:
+`/mcp` confirms the connection. A working one lists two tools and one
+resource per country file:
 
 ```
 Tools:      get_einvoicing_rules, check_country_coverage
@@ -248,6 +249,20 @@ Resources:  invoiceready://knowledge/BE
             invoiceready://knowledge/FR
             invoiceready://knowledge/PL
 ```
+
+Asked an ordinary question, the client calls the tool rather than answering
+from its own knowledge, and every obligation arrives with the official
+source and the date it was reviewed:
+
+![Claude Code calling get_einvoicing_rules for a Belgian business, returning two obligations with dates, formats and a finance.belgium.be source](docs/images/mcp-claude-code-cited-obligations.png)
+
+The more important behaviour is what happens outside the covered set. Italy
+has a well-known e-invoicing mandate, and the model certainly has opinions
+about it — but the server has no sourced rules for it, so the answer is a
+refusal that names what *is* covered, and says plainly that this is not the
+same as "no obligations apply":
+
+![Claude Code refusing an Italian query, explaining that Italy is absent from the rules database rather than free of obligations, and listing the covered countries](docs/images/mcp-claude-code-refusal.png)
 
 To poke at it in a browser instead, the MCP Inspector speaks to either
 transport:

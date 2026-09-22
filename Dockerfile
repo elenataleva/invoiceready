@@ -33,6 +33,11 @@ WORKDIR /app
 # read than it is worth.
 COPY pyproject.toml ./
 COPY app ./app
+# Both front doors ship in one image: the default CMD below serves the JSON
+# API, and the MCP server is the same code reached over a different
+# transport, started by overriding the command (see render.yaml). Copied
+# before the install because pyproject's packages.find looks for it.
+COPY mcp_server ./mcp_server
 
 # No torch: embeddings run on ONNX via fastembed (docs/04-FRONTEND-DESIGN.md
 # #8.4). The previous image installed a CPU-only torch build to dodge ~4GB of

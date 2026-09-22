@@ -15,7 +15,8 @@ Covers **Belgium, Poland and France**.
 
 Docs: [Business plan](docs/01-BUSINESS-PLAN.md) ·
 [Technical design](docs/02-TECHNICAL-DESIGN.md) ·
-[Implementation plan](docs/03-IMPLEMENTATION-PLAN.md)
+[Implementation plan](docs/03-IMPLEMENTATION-PLAN.md) ·
+[MCP server](docs/04-MCP-SERVER.md)
 
 ---
 
@@ -147,7 +148,7 @@ Both are safe to re-run; each fully replaces its own rows.
 ## Running it
 
 ```bash
-pytest                               # 42 tests, no API calls, no network
+pytest                               # 86 tests, no API calls, no network
 ruff check . && ruff format --check .
 python scripts/run_eval.py           # 58 cases against the REAL API — costs money
 
@@ -182,7 +183,158 @@ docker run -p 8000:8000 \
 Migrations run on container start, so a deploy can't serve against an
 out-of-date schema. The embedding model is baked into the image at build time
 — no download on cold start, and no dependency on HuggingFace being reachable.
-Host-agnostic: no Railway/Render/Fly config in the repo.
+
+### The MCP server
+
+MCP is a standard way for an AI client to reach an external tool or data
+source: one JSON-RPC contract, so a server written once works with every
+MCP-compatible client instead of needing bespoke glue per pairing. This
+repo exposes its rules engine as one, so an AI assistant can answer
+e-invoicing questions from the same sourced database the web app uses.
+
+**What it's for, honestly:** this was built to understand the protocol, not
+because integration demand exists — nobody is currently consuming it. The
+plausible consumer is a small accounting practice running its own internal
+assistant, which could answer client questions about e-invoicing deadlines
+without rebuilding the knowledge base. It is an MCP server exposing a rules
+engine, not an integration platform.
+
+**What it exposes:**
+
+| Tool | Does |
+|---|---|
+| `get_einvoicing_rules` | Obligations for one business profile — dates, formats, networks, each with its source URL |
+| `check_country_coverage` | Which countries are covered and when each was last reviewed. Cheap; call it before promising an answer |
+
+| Resource | Is |
+|---|---|
+| `invoiceready://knowledge/{BE,FR,PL}` | The curated per-country markdown, readable as context. One per file in `knowledge_base/` |
+
+Both tools read the same `rules` table the REST API does, and neither makes
+an LLM call — an MCP client already has a model of its own, so the server
+ships facts and sources, not prose.
+
+#### Connecting it to Claude Code
+
+`.mcp.json` in this repo already declares the server, so from the project
+root:
+
+```bash
+claude                               # Claude Code prompts to trust the server
+/mcp                                 # confirms it connected, lists the tools
+```
+
+To register it manually instead, or for another client:
+
+```bash
+claude mcp add invoiceready -- .venv/bin/python -m mcp_server.server
+```
+
+It must run from the repo root: settings load from `.env` relative to the
+working directory. Started elsewhere it exits with
+`ValidationError ... database_url Field required`, which means exactly that
+and nothing more interesting. The venv must have `pip install -e ".[dev]"`
+run in it, and the database must be migrated and seeded — the server reads
+the same tables as the API, so an unseeded database yields a server that
+connects fine and reports covering no countries.
+
+On Windows the interpreter path is `.venv\Scripts\python.exe`.
+
+A working connection lists two tools and one resource per country file:
+
+```
+Tools:      get_einvoicing_rules, check_country_coverage
+Resources:  invoiceready://knowledge/BE
+            invoiceready://knowledge/FR
+            invoiceready://knowledge/PL
+```
+
+To poke at it in a browser instead, the MCP Inspector speaks to either
+transport:
+
+```bash
+npx @modelcontextprotocol/inspector .venv/bin/python -m mcp_server.server
+```
+
+Design reasoning and protocol notes: [docs/04-MCP-SERVER.md](docs/04-MCP-SERVER.md).
+
+#### Running it directly
+
+Two transports, one entrypoint:
+
+```bash
+python -m mcp_server.server                    # stdio (default) — local subprocess
+
+MCP_TRANSPORT=http MCP_PORT=8931 \
+  python -m mcp_server.server                  # HTTP — reachable over a network
+```
+
+In HTTP mode the endpoint is `/mcp` — so a client or the MCP Inspector
+connects to `http://127.0.0.1:8931/mcp`, not to the bare host and port.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `MCP_TRANSPORT` | `stdio` | `stdio` for a local client, `http` when deployed |
+| `MCP_HOST` | `127.0.0.1` | HTTP only. Loopback by default so local runs aren't published to the network; a container must set `0.0.0.0` |
+| `MCP_PORT` | `PORT`, else `8000` | HTTP only |
+
+An unrecognised `MCP_TRANSPORT` is a startup error, not a fallback — a
+server that quietly reverts to stdio looks like a healthy deploy that no
+client can reach.
+
+In stdio mode the protocol *is* stdout, so nothing may print to it. Logs go
+to stderr.
+
+#### Two front doors, one engine
+
+```
+              app/rules_engine.py  ← single source of truth
+              app/retrieval.py
+                   │         │
+      ┌────────────┘         └────────────┐
+      ▼                                   ▼
+FastAPI routers                      mcp_server/
+/api/assess, /api/ask                tools + resources
+humans, via a browser                AI clients, via JSON-RPC
+```
+
+The MCP server reimplements nothing. It imports `get_applicable_rules` and
+calls it, so a row edited in the `rules` table changes both front doors at
+once with no duplication and no second copy to keep in sync. A test asserts
+the MCP tool returns exactly what `POST /api/assess` returns for the same
+profile — if the two ever diverge, that fails.
+
+The same grounding rules cross the protocol boundary unchanged: deadlines
+and thresholds come from the database deterministically, every obligation
+carries a `source_url` and the date it was reviewed, and an uncovered
+country produces an explicit refusal rather than a guess. An MCP client
+surfaces this output to someone with no other framing around it, so
+`covered: false` and "no obligations apply" are kept strictly distinct —
+conflating them would let a model tell an Italian business it has nothing
+to do, which is a fabrication rather than a finding.
+
+The tool descriptions turned out to matter more than expected. FastMCP
+turns each docstring into the description the model reads when deciding
+whether to call a tool, which makes them prompts rather than comments —
+vague ones produce unreliable invocation, so they are written as
+instructions to a model and asserted on in tests.
+
+**No authentication, deliberately.** Everything this server exposes is public
+information: government e-invoicing deadlines and the curated knowledge base,
+both already served unauthenticated over the REST API. Adding auth would
+protect nothing and would make the server harder to try. **This decision has
+to be revisited the moment the server exposes anything user-specific** — a
+saved business profile, a query history, anything per-tenant.
+
+**No rate limiting yet either.** `/api/ask` and `/api/assess` are rate-limited
+because each call costs Anthropic money; these MCP tools make no LLM call at
+all, so the only exposure is database load. That is a weaker argument for a
+limiter, not a non-existent one — a public deployment should still get one.
+
+The deployed service is defined in `render.yaml` and runs the same image as
+the API with the command overridden. It needs `ANTHROPIC_API_KEY` set to any
+non-empty value despite never calling Claude, because `app/config.py` declares
+the key mandatory and the MCP server imports `app.db`.
 
 ---
 
@@ -225,6 +377,7 @@ app/
   logging_setup.py  JSON stdout logging; sole owner of query_logs inserts
   rate_limit.py     per-IP limits on the two endpoints that cost money
   routers/          ask.py, assess.py, countries.py — JSON only
+mcp_server/         MCP front door onto the same engine — tools + resources
 frontend/           React + Vite client (see frontend/README.md)
   src/api/          DataSource interface, HTTP + demo implementations
   src/features/     intake wizard, assessment, Q&A

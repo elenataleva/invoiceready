@@ -36,3 +36,38 @@ services:
       # CORS error while the API itself looks perfectly healthy.
       - key: ALLOWED_ORIGINS
         sync: false
+
+  # The MCP server: the same image and the same rules engine as the API
+  # above, reached over JSON-RPC by AI clients instead of over REST by
+  # browsers. It is a separate service rather than a path on the API because
+  # the two have different lifecycles - this one can be redeployed, or taken
+  # down entirely, without touching the thing the frontend depends on.
+  - type: web
+    name: invoiceready-mcp
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Overrides the image's default CMD, which starts the JSON API. No
+    # `alembic upgrade head` here on purpose: this server only reads, and two
+    # services racing to migrate the same database on deploy is a bad trade
+    # for no benefit.
+    dockerCommand: python -m mcp_server.server
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: MCP_TRANSPORT
+        value: http
+      # The container is only reachable through Render's proxy, and binding
+      # loopback would make the platform's health check fail on a server
+      # that is running perfectly well.
+      - key: MCP_HOST
+        value: "0.0.0.0"
+      - key: ENV
+        value: production
+
+      - key: DATABASE_URL
+        sync: false
+      # Never read: this server makes no LLM call. It is required only
+      # because app/config.py declares the key mandatory and app/db.py
+      # constructs Settings at import. Any non-empty value works.
+      - key: ANTHROPIC_API_KEY
+        sync: false

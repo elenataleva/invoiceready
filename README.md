@@ -187,123 +187,56 @@ Migrations run on container start, so a deploy can't serve against an
 out-of-date schema. The embedding model is baked into the image at build time
 — no download on cold start, and no dependency on HuggingFace being reachable.
 
-### The MCP server
+---
+
+## The MCP server
 
 MCP is a standard way for an AI client to reach an external tool or data
 source: one JSON-RPC contract, so a server written once works with every
-MCP-compatible client instead of needing bespoke glue per pairing. This
-repo exposes its rules engine as one, so an AI assistant can answer
-e-invoicing questions from the same sourced database the web app uses.
+MCP-compatible client instead of needing bespoke glue per pairing. This repo
+exposes its rules engine as one, so an AI assistant can answer e-invoicing
+questions from the same sourced database the web app uses.
 
-**What it's for, honestly:** this was built to understand the protocol, not
+**What it's for, honestly:** it was built to understand the protocol, not
 because integration demand exists — nobody is currently consuming it. The
 plausible consumer is a small accounting practice running its own internal
 assistant, which could answer client questions about e-invoicing deadlines
-without rebuilding the knowledge base. It is an MCP server exposing a rules
+without rebuilding the knowledge base. It's an MCP server exposing a rules
 engine, not an integration platform.
-
-**What it exposes:**
 
 | Tool | Does |
 |---|---|
 | `get_einvoicing_rules` | Obligations for one business profile — dates, formats, networks, each with its source URL |
-| `check_country_coverage` | Which countries are covered and when each was last reviewed. Cheap; call it before promising an answer |
+| `check_country_coverage` | Which countries are covered and when each was last reviewed |
 
-| Resource | Is |
-|---|---|
-| `invoiceready://knowledge/{BE,FR,PL}` | The curated per-country markdown, readable as context. One per file in `knowledge_base/` |
+Plus one readable resource per country, `invoiceready://knowledge/{BE,FR,PL}`
+— the curated markdown itself, for a client that wants the context rather
+than an answer.
 
-Both tools read the same `rules` table the REST API does, and neither makes
-an LLM call — an MCP client already has a model of its own, so the server
-ships facts and sources, not prose.
-
-#### Connecting it to Claude Code
-
-`.mcp.json` in this repo already declares the server, so from the project
-root:
-
-```bash
-claude                               # Claude Code prompts to trust the server
-/mcp                                 # confirms it connected, lists the tools
-```
-
-To register it manually instead, or for another client:
+Run it locally, or point a client at the deployed one:
 
 ```bash
 claude mcp add invoiceready -- .venv/bin/python -m mcp_server.server
+
+claude mcp add --transport http invoiceready-remote \
+  https://invoiceready-mcp.onrender.com/mcp
 ```
 
-It must run from the repo root: settings load from `.env` relative to the
-working directory. Started elsewhere it exits with
-`ValidationError ... database_url Field required`, which means exactly that
-and nothing more interesting. The venv must have `pip install -e ".[dev]"`
-run in it, and the database must be migrated and seeded — the server reads
-the same tables as the API, so an unseeded database yields a server that
-connects fine and reports covering no countries.
-
-On Windows the interpreter path is `.venv\Scripts\python.exe`.
-
-`/mcp` confirms the connection. A working one lists two tools and one
-resource per country file:
-
-```
-Tools:      get_einvoicing_rules, check_country_coverage
-Resources:  invoiceready://knowledge/BE
-            invoiceready://knowledge/FR
-            invoiceready://knowledge/PL
-```
-
-Asked an ordinary question, the client calls the tool rather than answering
-from its own knowledge, and every obligation arrives with the official
-source and the date it was reviewed:
+Asked an ordinary question, the client calls the tool instead of answering
+from its own knowledge, and every obligation arrives with the official source
+and the date it was reviewed:
 
 ![Claude Code calling get_einvoicing_rules for a Belgian business, returning two obligations with dates, formats and a finance.belgium.be source](docs/images/mcp-claude-code-cited-obligations.png)
 
-The more important behaviour is what happens outside the covered set. Italy
-has a well-known e-invoicing mandate, and the model certainly has opinions
-about it — but the server has no sourced rules for it, so the answer is a
-refusal that names what *is* covered, and says plainly that this is not the
-same as "no obligations apply":
+The more interesting behaviour is outside the covered set. Italy has a
+well-known e-invoicing mandate and the model certainly has opinions about it,
+but this server has no sourced rules for it — so the answer is a refusal that
+names what *is* covered and says plainly that this is not the same as "no
+obligations apply":
 
 ![Claude Code refusing an Italian query, explaining that Italy is absent from the rules database rather than free of obligations, and listing the covered countries](docs/images/mcp-claude-code-refusal.png)
 
-To poke at it in a browser instead, the MCP Inspector speaks to either
-transport:
-
-```bash
-npx @modelcontextprotocol/inspector .venv/bin/python -m mcp_server.server
-```
-
-Design reasoning and protocol notes: [docs/04-MCP-SERVER.md](docs/04-MCP-SERVER.md).
-
-#### Running it directly
-
-Two transports, one entrypoint:
-
-```bash
-python -m mcp_server.server                    # stdio (default) — local subprocess
-
-MCP_TRANSPORT=http MCP_PORT=8931 \
-  python -m mcp_server.server                  # HTTP — reachable over a network
-```
-
-In HTTP mode the endpoint is `/mcp` — so a client or the MCP Inspector
-connects to `http://127.0.0.1:8931/mcp`, not to the bare host and port.
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `MCP_TRANSPORT` | `stdio` | `stdio` for a local client, `http` when deployed |
-| `MCP_HOST` | `127.0.0.1` | HTTP only. Loopback by default so local runs aren't published to the network; a container must set `0.0.0.0` |
-| `MCP_PORT` | `PORT`, else `8000` | HTTP only |
-
-An unrecognised `MCP_TRANSPORT` is a startup error, not a fallback — a
-server that quietly reverts to stdio looks like a healthy deploy that no
-client can reach.
-
-In stdio mode the protocol *is* stdout, so nothing may print to it. Logs go
-to stderr.
-
-#### Two front doors, one engine
+### Two front doors, one engine
 
 ```
               app/rules_engine.py  ← single source of truth
@@ -316,54 +249,18 @@ FastAPI routers                      mcp_server/
 humans, via a browser                AI clients, via JSON-RPC
 ```
 
-The MCP server reimplements nothing. It imports `get_applicable_rules` and
+The MCP server reimplements nothing — it imports `get_applicable_rules` and
 calls it, so a row edited in the `rules` table changes both front doors at
-once with no duplication and no second copy to keep in sync. A test asserts
-the MCP tool returns exactly what `POST /api/assess` returns for the same
-profile — if the two ever diverge, that fails.
+once. A test asserts the tool returns exactly what `POST /api/assess` returns
+for the same profile, so divergence fails the build rather than reaching a
+user.
 
-The same grounding rules cross the protocol boundary unchanged: deadlines
-and thresholds come from the database deterministically, every obligation
-carries a `source_url` and the date it was reviewed, and an uncovered
-country produces an explicit refusal rather than a guess. An MCP client
-surfaces this output to someone with no other framing around it, so
-`covered: false` and "no obligations apply" are kept strictly distinct —
-conflating them would let a model tell an Italian business it has nothing
-to do, which is a fabrication rather than a finding.
+Neither tool makes an LLM call. The REST API spends a Claude call turning a
+rule into prose because a browser can't; an MCP client already has a model of
+its own, so this ships facts and sources and lets the client write the prose.
 
-The tool descriptions turned out to matter more than expected. FastMCP
-turns each docstring into the description the model reads when deciding
-whether to call a tool, which makes them prompts rather than comments —
-vague ones produce unreliable invocation, so they are written as
-instructions to a model and asserted on in tests.
-
-**No authentication, deliberately.** Everything this server exposes is public
-information: government e-invoicing deadlines and the curated knowledge base,
-both already served unauthenticated over the REST API. Adding auth would
-protect nothing and would make the server harder to try. **This decision has
-to be revisited the moment the server exposes anything user-specific** — a
-saved business profile, a query history, anything per-tenant.
-
-**No rate limiting yet either.** `/api/ask` and `/api/assess` are rate-limited
-because each call costs Anthropic money; these MCP tools make no LLM call at
-all, so the only exposure is database load. That is a weaker argument for a
-limiter, not a non-existent one — a public deployment should still get one.
-
-The deployed service is defined in `render.yaml` and runs the same image as
-the API with the command overridden. It needs `ANTHROPIC_API_KEY` set to any
-non-empty value despite never calling Claude, because `app/config.py` declares
-the key mandatory and the MCP server imports `app.db`.
-
-It is live at `https://invoiceready-mcp.onrender.com/mcp`, and any MCP client
-can point at that URL instead of running the server locally:
-
-```bash
-claude mcp add --transport http invoiceready-remote \
-  https://invoiceready-mcp.onrender.com/mcp
-```
-
-A bare `GET` of that URL returns 400, which is correct — it expects an MCP
-client, not a browser.
+Setup, transports, troubleshooting and the auth reasoning:
+**[docs/04-MCP-SERVER.md](docs/04-MCP-SERVER.md)**.
 
 ---
 

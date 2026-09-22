@@ -4,7 +4,8 @@ The rules engine behind InvoiceReady, exposed over the Model Context Protocol
 so an AI client can query it directly.
 
 > Implementation plan and task breakdown: `docs/04-MCP-IMPLEMENTATION-PLAN.md`.
-> Setup and run instructions: the MCP section of `README.md`.
+> What it is and why, in brief: the MCP section of `README.md`. This document
+> is the operational one — how to run it, and every decision behind it.
 
 ---
 
@@ -63,7 +64,76 @@ as context rather than through a tool call. One resource per file in
 change. Each description carries the review date, since a stale compliance
 source is worse than no source.
 
-## 3. The design decision worth explaining
+## 3. Running it
+
+### Locally, from Claude Code
+
+`.mcp.json` in the repo already declares the server, so from the project root
+`claude` prompts to trust it and `/mcp` confirms the connection. To register
+it by hand instead, or for another client:
+
+```bash
+claude mcp add invoiceready -- .venv/bin/python -m mcp_server.server
+```
+
+On Windows the interpreter path is `.venv\Scripts\python.exe`.
+
+Three things have to hold, and each fails in a way that doesn't obviously
+point at its cause:
+
+| Requirement | Symptom if missing |
+|---|---|
+| Run from the repo root | `ValidationError ... database_url Field required` — settings load `.env` relative to the working directory, so this is a cwd problem, not a database one |
+| `pip install -e ".[dev]"` in the venv | The client reports the server failed to start |
+| Database migrated *and* seeded | Server connects fine and reports covering no countries |
+
+To poke at it in a browser, the MCP Inspector speaks either transport:
+
+```bash
+npx @modelcontextprotocol/inspector .venv/bin/python -m mcp_server.server
+```
+
+### Directly, and over HTTP
+
+Two transports, one entrypoint:
+
+```bash
+python -m mcp_server.server                    # stdio (default) — local subprocess
+
+MCP_TRANSPORT=http MCP_PORT=8931 \
+  python -m mcp_server.server                  # HTTP — reachable over a network
+```
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `MCP_TRANSPORT` | `stdio` | `stdio` for a local client, `http` when deployed |
+| `MCP_HOST` | `127.0.0.1` | HTTP only. Loopback by default so a local run isn't published to the network; a container must set `0.0.0.0` |
+| `MCP_PORT` | `PORT`, else `8000` | HTTP only. `PORT` is what most PaaS hosts inject |
+
+In HTTP mode the endpoint is `/mcp` — clients connect to
+`http://127.0.0.1:8931/mcp`, not the bare host and port. A plain browser
+`GET` of that path returns 400, which is correct: it expects an MCP client.
+
+An unrecognised `MCP_TRANSPORT` is a startup error rather than a fallback. A
+server that quietly reverted to stdio would look like a healthy deploy that
+no client can reach.
+
+### Deployed
+
+`render.yaml` defines `invoiceready-mcp`, running the same image as the API
+with the command overridden and no migration step — this server only reads,
+and two services racing to migrate the same database on deploy buys nothing.
+
+It needs `ANTHROPIC_API_KEY` set to any non-empty value despite never calling
+Claude, because `app/config.py` declares the key mandatory and importing
+`app.db` constructs `Settings`. `DATABASE_URL` must be the same connection
+string the API uses.
+
+Live at `https://invoiceready-mcp.onrender.com/mcp`, on a free tier that
+sleeps after ~15 minutes idle and costs roughly a minute of cold start on the
+next request.
+
+## 4. The design decision worth explaining
 
 ```
               app/rules_engine.py  ← single source of truth
@@ -90,7 +160,7 @@ side of the call. So the server ships facts and sources, and the client writes
 the prose. That makes the tools free to serve and removes the cost argument for
 rate limiting them.
 
-## 4. Grounding rules cross the protocol boundary
+## 5. Grounding rules cross the protocol boundary
 
 Everything in `CLAUDE.md` still holds, and the protocol boundary is exactly
 where it would be tempting to let it slip:
@@ -106,7 +176,7 @@ where it would be tempting to let it slip:
   output to an end user with no other framing around it, so the disclaimer has
   to travel with the data rather than live in a UI template.
 
-## 5. Things learned worth repeating
+## 6. Things learned worth repeating
 
 **Tool descriptions are prompts, not comments.** FastMCP turns each docstring
 into the description the model reads when deciding whether to call a tool.
@@ -129,7 +199,7 @@ time. A stdio server is spawned per session, so it would pay that cost every
 time to read three header fields. A test pins the two parsers together so they
 cannot drift.
 
-## 6. Status
+## 7. Status
 
 | | |
 |---|---|
